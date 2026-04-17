@@ -105,12 +105,14 @@ main { padding:16px 12px 60px; max-width:100%; }
   -webkit-overflow-scrolling:touch;
   border-radius:8px;
   border:1px solid var(--borda);
+  position:relative;
 }
 table { border-collapse:collapse; font-size:.76rem; min-width:1200px; width:100%; }
 thead tr { background:var(--azul); }
 thead th { color:var(--neon); font-family:'Syne',sans-serif; font-weight:700; font-size:.68rem; text-transform:uppercase; letter-spacing:.4px; padding:9px 8px; text-align:center; white-space:nowrap; border-right:1px solid rgba(255,255,255,.1); }
 thead th.th-venda { background:var(--marrom-h); color:var(--neon2); }
 thead th.th-st { background:#4a148c; color:#e040fb; }
+thead th.th-frozen { position:sticky; left:0; z-index:3; background:var(--azul); box-shadow:2px 0 6px rgba(0,0,0,.18); }
 tbody tr:nth-child(even) { background:var(--azul-cl); }
 tbody tr:nth-child(odd)  { background:#fff; }
 tbody tr:hover { background:#fffbe6; }
@@ -122,6 +124,17 @@ tbody td.td-desm { background:#f1f8e9; }
 tbody tr:hover td.td-venda { background:#fff3cd; }
 tbody tr:hover td.td-st { background:#ede7f6; }
 tbody tr:hover td.td-desm { background:#dcedc8; }
+/* Coluna produto congelada */
+td.td-frozen, th.th-frozen {
+  position:sticky;
+  left:0;
+  z-index:2;
+  background:#fff;
+  box-shadow:2px 0 6px rgba(0,0,0,.10);
+}
+thead th.th-frozen { background:var(--azul); z-index:3; }
+tbody tr:nth-child(even) td.td-frozen { background:var(--azul-cl); }
+tbody tr:hover td.td-frozen { background:#fffbe6; }
 
 /* ── TAGS ── */
 .tag-ok     { background:#e8f5e9; color:#2e7d32; border-radius:4px; padding:2px 7px; font-size:.7rem; font-weight:600; }
@@ -188,18 +201,21 @@ input.ef-venda { border-color:#8D6E63; }
 .col-drag-handle { color:#aaa; font-size:1rem; }
 .col-item input[type=checkbox] { accent-color:var(--azul2); width:14px; height:14px; }
 
-/* ── COLUNA PRODUTO REDIMENSIONÁVEL ── */
-.prod-col-wrap { display:inline-flex; align-items:center; gap:0; width:100%; }
-.prod-col-wrap span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; min-width:60px; }
+/* ── COLUNA PRODUTO REDIMENSIONÁVEL (estilo Excel) ── */
+.prod-col-wrap { display:flex; align-items:center; width:100%; height:100%; }
+.prod-col-wrap span.prod-text { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; cursor:pointer; }
+.prod-col-wrap span.prod-text:hover { color:var(--azul2); text-decoration:underline dotted; }
 .col-resizer {
-  width:6px; min-width:6px; height:18px;
+  position:absolute;
+  right:0; top:0; bottom:0;
+  width:5px;
   cursor:col-resize;
-  background:linear-gradient(to bottom, transparent 20%, #aaa 20%, #aaa 40%, transparent 40%, transparent 60%, #aaa 60%, #aaa 80%, transparent 80%);
-  border-radius:2px;
-  opacity:.5;
-  flex-shrink:0;
+  z-index:10;
+  background:transparent;
+  transition:background .15s;
 }
-.col-resizer:hover { opacity:1; background:linear-gradient(to bottom, transparent 20%, var(--azul2) 20%, var(--azul2) 40%, transparent 40%, transparent 60%, var(--azul2) 60%, var(--azul2) 80%, transparent 80%); }
+.col-resizer:hover, .col-resizer.resizing { background:var(--azul2); opacity:.7; }
+td.td-frozen { position:relative; }
 
 /* ── ARRASTAR TABELA COM MOUSE ── */
 .table-outer { cursor:grab; }
@@ -301,8 +317,14 @@ input.ef-venda { border-color:#8D6E63; }
 
   <!-- TAB FORNECEDORES -->
   <div class="tab-content card" id="tab-fornecedores" style="display:none;">
-    <div class="card-title">Planilhas por Fornecedor</div>
-    <div class="alert alert-info">Cada fornecedor tem histórico individual. Baixe a planilha de qualquer um.</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+      <div class="card-title" style="margin:0;">Planilhas por Fornecedor</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="btn btn-primary btn-sm" onclick="ordenarFornecedores('alfa')">🔤 A→Z</button>
+        <button class="btn btn-primary btn-sm" onclick="ordenarFornecedores('data')">📅 Por data</button>
+      </div>
+    </div>
+    <div class="alert alert-info" style="margin-bottom:12px;">Cada fornecedor tem histórico individual. Baixe ou limpe individualmente.</div>
     <div class="fornec-grid" id="fornec-grid">
       <div class="empty">Nenhum fornecedor cadastrado ainda.</div>
     </div>
@@ -844,6 +866,7 @@ function renderMatriz() {
       const thCls = c.id==='st'||c.id==='stUnit' ? 'th-st'
                   : (c.id==='markup'||c.id==='vEmbal'||c.id==='vUnid') ? 'th-venda'
                   : (c.id==='unEmbal'||c.id==='totUnid'||c.id==='cUnid') ? 'th-desm'
+                  : c.id==='produto' ? 'th-frozen'
                   : '';
       return `<th class="${thCls}">${c.label}</th>`;
     }).join('');
@@ -871,9 +894,9 @@ function renderMatriz() {
       del:      `<td><button class="btn-del-row" onclick="deletarLinha(${i})" title="Deletar esta linha">🗑️</button></td>`,
       num:      `<td>${i+1}</td>`,
       fornec:   `<td class="left" style="max-width:130px;overflow:hidden;text-overflow:ellipsis" title="${r.fornecedor}">${r.fornecedor}</td>`,
-      produto:  `<td class="left prod-cell" id="prod-col-${i}" style="width:var(--prod-col-w,150px);max-width:300px;min-width:60px;overflow:hidden;">
+      produto:  `<td class="left td-frozen" style="width:var(--prod-col-w,150px);min-width:60px;max-width:400px;overflow:hidden;">
                   <div class="prod-col-wrap">
-                    <span onclick="abrirModalProduto('${r.produto.replace(/'/g,"\\'").replace(/\\/g,'\\\\')}')" title="Clique para ver nome completo">${r.produto}</span>
+                    <span class="prod-text" onclick="abrirModalProduto(${i})" title="Clique para ver nome completo">${r.produto}</span>
                     <span class="col-resizer" onmousedown="iniciarResizeColProduto(event)"></span>
                   </div>
                 </td>`,
@@ -903,7 +926,8 @@ function renderMatriz() {
 }
 
 // ── Modal produto completo ──
-function abrirModalProduto(nome) {
+function abrirModalProduto(idx) {
+  const nome = matrizData[idx] ? matrizData[idx].produto : '';
   document.getElementById('modal-produto-texto').textContent = nome;
   document.getElementById('modal-produto').classList.add('open');
 }
@@ -911,28 +935,44 @@ document.getElementById('modal-produto').addEventListener('click', e => {
   if (e.target === e.currentTarget) e.currentTarget.classList.remove('open');
 });
 
-// ── Resize coluna Produto ──
-let _resizeStartX = 0, _resizeStartW = 0;
+// ── Resize coluna Produto estilo Excel ──
+let _prodColW    = parseInt(localStorage.getItem('ls_prod_col_w') || '150');
+let _resizeActive = false;
+let _resizeStartX = 0;
+
+// Aplica largura salva ao carregar
+document.documentElement.style.setProperty('--prod-col-w', _prodColW + 'px');
+
 function iniciarResizeColProduto(e) {
-  e.preventDefault(); e.stopPropagation();
+  e.preventDefault();
+  e.stopPropagation();
+  _resizeActive = true;
   _resizeStartX = e.clientX;
-  const td = e.target.closest('td');
-  _resizeStartW = td ? td.offsetWidth : 150;
-  document.addEventListener('mousemove', _onResizeMove);
-  document.addEventListener('mouseup',   _onResizeUp);
-}
-function _onResizeMove(e) {
-  const diff = e.clientX - _resizeStartX;
-  const newW = Math.max(60, Math.min(400, _resizeStartW + diff));
-  document.documentElement.style.setProperty('--prod-col-w', newW + 'px');
-  // aplica a todas as colunas produto visíveis
-  document.querySelectorAll('[id^="prod-col-"]').forEach(td => {
-    td.style.width = newW + 'px';
-  });
-}
-function _onResizeUp() {
-  document.removeEventListener('mousemove', _onResizeMove);
-  document.removeEventListener('mouseup',   _onResizeUp);
+  e.target.classList.add('resizing');
+  document.body.style.cursor = 'col-resize';
+  document.body.style.userSelect = 'none';
+
+  function onMove(ev) {
+    if (!_resizeActive) return;
+    const diff = ev.clientX - _resizeStartX;
+    _prodColW  = Math.max(60, Math.min(400, _prodColW + diff));
+    _resizeStartX = ev.clientX;
+    document.documentElement.style.setProperty('--prod-col-w', _prodColW + 'px');
+    document.querySelectorAll('td.td-frozen').forEach(td => { td.style.width = _prodColW + 'px'; });
+  }
+
+  function onUp(ev) {
+    _resizeActive = false;
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+    document.querySelectorAll('.col-resizer').forEach(r => r.classList.remove('resizing'));
+    localStorage.setItem('ls_prod_col_w', _prodColW);
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup',   onUp);
+  }
+
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup',   onUp);
 }
 
 // ── Arrastar tabela com mouse ──
@@ -1078,29 +1118,47 @@ async function limparMatriz() {
 // ═══════════════════════════════════════════════════════════
 // RENDER FORNECEDORES
 // ═══════════════════════════════════════════════════════════
+let _fornecOrdem = localStorage.getItem('ls_fornec_ordem') || 'original';
+
+function ordenarFornecedores(tipo) {
+  _fornecOrdem = tipo;
+  localStorage.setItem('ls_fornec_ordem', tipo);
+  renderFornecedores();
+}
+
 function renderFornecedores() {
   const grid = document.getElementById('fornec-grid');
   if (!matrizData.length) { grid.innerHTML='<div class="empty">Nenhum fornecedor ainda.</div>'; return; }
 
-  // Agrupa itens por fornecedor com cópia profunda para evitar contaminação
+  // Agrupa com cópia profunda
   const fornecs = {};
-  matrizData.forEach((r,idx) => {
+  matrizData.forEach((r, idx) => {
     const key = r.fornecedor;
     if (!fornecs[key]) fornecs[key] = [];
-    fornecs[key].push({ ...r, _matrizIdx: idx }); // cópia com índice original
+    fornecs[key].push({ ...r, _matrizIdx: idx });
   });
 
-  // Snapshot imutável indexado — evita referências cruzadas entre fornecedores
-  window._fornecSnapshot = Object.entries(fornecs).map(([nome, itens]) => ({
+  // Snapshot isolado
+  let snap = Object.entries(fornecs).map(([nome, itens]) => ({
     nome,
-    itens: itens.map(i => ({ ...i })) // cópia independente
+    itens: itens.map(i => ({ ...i })),
+    primeiraData: itens[0].timestamp || itens[0].dataNF || ''
   }));
 
-  grid.innerHTML = window._fornecSnapshot.map((f, idx) => {
+  // Ordenação
+  if (_fornecOrdem === 'alfa') {
+    snap.sort((a,b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+  } else if (_fornecOrdem === 'data') {
+    snap.sort((a,b) => new Date(b.primeiraData) - new Date(a.primeiraData));
+  }
+
+  window._fornecSnapshot = snap;
+
+  grid.innerHTML = snap.map((f, idx) => {
     const { nome, itens } = f;
     const ultData = itens[itens.length-1].dataNF;
-    const alertas = itens.filter(i=>i.variacao>0).length;
-    const comST   = itens.filter(i=>i.temST).length;
+    const alertas = itens.filter(i => i.variacao > 0).length;
+    const comST   = itens.filter(i => i.temST).length;
     return `<div class="fornec-card">
       <div class="fornec-name">🏭 ${nome}</div>
       <div class="fornec-meta">Itens: <b>${itens.length}</b> &nbsp;|&nbsp; Última NF: <b>${ultData}</b></div>
@@ -1108,7 +1166,8 @@ function renderFornecedores() {
       ${alertas ? `<div class="fornec-meta" style="color:#c62828">⚠️ ${alertas} item(s) com reajuste</div>` : ''}
       <div class="fornec-actions">
         <button class="btn btn-primary btn-sm" onclick="exportarFornecedorIdx(${idx})">📥 .xlsx</button>
-        <button class="btn btn-warn btn-sm" onclick="switchTab('matriz')">👁️ Ver</button>
+        <button class="btn btn-warn btn-sm" onclick="verFornecedorIdx(${idx})">👁️ Ver</button>
+        <button class="btn btn-danger btn-sm" onclick="limparFornecedorIdx(${idx})">🗑️ Limpar</button>
       </div>
     </div>`;
   }).join('');
@@ -1118,6 +1177,28 @@ function exportarFornecedorIdx(idx) {
   if (!window._fornecSnapshot || !window._fornecSnapshot[idx]) return;
   const { nome, itens } = window._fornecSnapshot[idx];
   exportarFornecedor(nome, itens);
+}
+
+function verFornecedorIdx(idx) {
+  if (!window._fornecSnapshot || !window._fornecSnapshot[idx]) return;
+  const { nome } = window._fornecSnapshot[idx];
+  switchTab('matriz');
+  setTimeout(() => {
+    document.getElementById('matriz-alert').innerHTML =
+      `<div class="alert alert-info">Filtrando: <b>${nome}</b></div>`;
+  }, 150);
+}
+
+async function limparFornecedorIdx(idx) {
+  if (!window._fornecSnapshot || !window._fornecSnapshot[idx]) return;
+  const { nome, itens } = window._fornecSnapshot[idx];
+  if (!confirm(`Deletar TODOS os ${itens.length} item(s) do fornecedor "${nome}"?\n\nEsta ação não pode ser desfeita.`)) return;
+  // Remove todos os itens deste fornecedor da matrizData
+  matrizData = matrizData.filter(r => r.fornecedor !== nome);
+  localStorage.setItem('ls_matriz', JSON.stringify(matrizData));
+  atualizarStats();
+  renderFornecedores();
+  if (scriptURL) await salvarNoSheets();
 }
 
 // ═══════════════════════════════════════════════════════════
