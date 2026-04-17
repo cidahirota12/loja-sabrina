@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Loja Sabrina — Controle de Fornecedores</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+:root {
+  --azul:     #1A3A6B;
+  --azul2:    #2E5FA3;
+  --azul-cl:  #D6E4F7;
+  --neon:     #FFFF00;
+  --neon2:    #FFD700;
+  --verde:    #2E7D32;
+  --branco:   #FFFFFF;
+  --cinza:    #F4F6FA;
+  --borda:    #C5D5EA;
+  --texto:    #1a2340;
+  --marrom:   #5D4037;
+  --marrom-h: #7B3F00;
+  --st-bg:    #fff3e0;
+  --st-cor:   #e65100;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--azul);
+  color: var(--texto);
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+header {
+  background: var(--azul);
+  padding: 12px 20px;
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 3px solid var(--neon);
+  position: sticky; top: 0; z-index: 200;
+  flex-wrap: wrap;
+}
+.logo { background: var(--neon); color: var(--azul); font-family:'Syne',sans-serif; font-weight:800; font-size:.9rem; padding:5px 10px; letter-spacing:1px; flex-shrink:0; }
+header h1 { font-family:'Syne',sans-serif; color:#fff; font-size:1rem; font-weight:700; flex:1; }
+.sync-status { font-size:.72rem; padding:4px 10px; border-radius:20px; font-weight:600; flex-shrink:0; }
+.sync-ok   { background:#e8f5e9; color:#2e7d32; }
+.sync-warn { background:#fff3e0; color:#e65100; }
+.sync-off  { background:#fce4ec; color:#c62828; }
+#btn-config-header { background:rgba(255,255,255,.15); color:#fff; border:1px solid rgba(255,255,255,.3); border-radius:6px; padding:5px 12px; font-size:.78rem; cursor:pointer; font-family:'Syne',sans-serif; font-weight:600; }
+#btn-config-header:hover { background:rgba(255,255,255,.25); }
+
+/* ── TABS ── */
+.tabs { display:flex; gap:0; padding:0 20px; background:var(--azul); overflow-x:auto; }
+.tab-btn { padding:9px 18px; border:none; background:rgba(255,255,255,.1); color:rgba(255,255,255,.6); font-family:'Syne',sans-serif; font-weight:600; font-size:.78rem; cursor:pointer; border-radius:8px 8px 0 0; transition:all .2s; white-space:nowrap; }
+.tab-btn.active { background:#fff; color:var(--azul); }
+
+/* ── MAIN ── */
+main { padding:16px 12px 60px; max-width:100%; }
+
+/* ── CARD ── */
+.card { background:#fff; border-radius:0 12px 12px 12px; padding:20px; margin-bottom:16px; box-shadow:0 4px 20px rgba(0,0,0,.15); }
+.card-title { font-family:'Syne',sans-serif; font-size:.85rem; font-weight:700; color:var(--azul2); text-transform:uppercase; letter-spacing:1px; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.card-title::before { content:''; display:inline-block; width:4px; height:16px; background:var(--neon2); border-radius:2px; }
+
+/* ── STATS ── */
+.stats { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:10px; margin-bottom:14px; }
+.stat { background:var(--azul); border-radius:10px; padding:12px 14px; text-align:center; }
+.stat-v { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; color:var(--neon); }
+.stat-l { color:rgba(255,255,255,.7); font-size:.7rem; margin-top:2px; }
+
+/* ── DROP ZONE ── */
+.drop-zone { border:2.5px dashed var(--azul2); border-radius:10px; padding:28px 16px; text-align:center; cursor:pointer; background:var(--cinza); transition:all .2s; }
+.drop-zone:hover,.drop-zone.drag-over { border-color:var(--neon2); background:#fffbe6; }
+.drop-zone input { display:none; }
+.drop-icon { font-size:2.2rem; margin-bottom:6px; }
+.drop-text { color:var(--azul2); font-weight:600; font-size:.95rem; }
+.drop-sub  { color:#888; font-size:.78rem; margin-top:3px; }
+
+/* ── BOTÕES ── */
+.btn { display:inline-flex; align-items:center; gap:6px; padding:9px 18px; border:none; border-radius:8px; font-family:'Syne',sans-serif; font-weight:700; font-size:.82rem; cursor:pointer; transition:all .2s; }
+.btn-primary { background:var(--azul); color:var(--neon); }
+.btn-primary:hover { background:var(--azul2); }
+.btn-success { background:var(--verde); color:#fff; }
+.btn-success:hover { filter:brightness(1.1); }
+.btn-warn { background:var(--neon2); color:var(--azul); }
+.btn-warn:hover { filter:brightness(1.05); }
+.btn-danger { background:#e53935; color:#fff; }
+.btn-sm { padding:6px 12px; font-size:.74rem; }
+.btn-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
+
+/* ── ALERTS ── */
+.alert { border-radius:8px; padding:10px 14px; font-size:.82rem; margin-bottom:12px; display:flex; align-items:flex-start; gap:8px; }
+.alert-info    { background:#e3f2fd; color:#1565c0; border-left:4px solid #1565c0; }
+.alert-success { background:#e8f5e9; color:#2e7d32; border-left:4px solid #2e7d32; }
+.alert-warn    { background:#fff8e1; color:#e65100; border-left:4px solid #e65100; }
+.alert-danger  { background:#fce4ec; color:#c62828; border-left:4px solid #c62828; }
+
+/* ── TABELA LANDSCAPE ── */
+.table-outer {
+  width:100%;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  border-radius:8px;
+  border:1px solid var(--borda);
+}
+table { border-collapse:collapse; font-size:.76rem; min-width:1200px; width:100%; }
+thead tr { background:var(--azul); }
+thead th { color:var(--neon); font-family:'Syne',sans-serif; font-weight:700; font-size:.68rem; text-transform:uppercase; letter-spacing:.4px; padding:9px 8px; text-align:center; white-space:nowrap; border-right:1px solid rgba(255,255,255,.1); }
+thead th.th-venda { background:var(--marrom-h); color:var(--neon2); }
+thead th.th-st { background:#4a148c; color:#e040fb; }
+tbody tr:nth-child(even) { background:var(--azul-cl); }
+tbody tr:nth-child(odd)  { background:#fff; }
+tbody tr:hover { background:#fffbe6; }
+tbody td { padding:7px 8px; text-align:center; border-bottom:1px solid var(--borda); border-right:1px solid #e8eef5; white-space:nowrap; }
+tbody td.left { text-align:left; }
+tbody td.td-venda { background:#FFF8E1; }
+tbody td.td-st { background:#f3e5f5; }
+tbody tr:hover td.td-venda { background:#fff3cd; }
+tbody tr:hover td.td-st { background:#ede7f6; }
+
+/* ── TAGS ── */
+.tag-ok     { background:#e8f5e9; color:#2e7d32; border-radius:4px; padding:2px 7px; font-size:.7rem; font-weight:600; }
+.tag-alerta { background:#fff3e0; color:#e65100; border-radius:4px; padding:2px 7px; font-size:.7rem; font-weight:600; }
+.tag-st     { background:#f3e5f5; color:#7b1fa2; border-radius:4px; padding:2px 7px; font-size:.7rem; font-weight:700; }
+.tag-normal { background:#e8f5e9; color:#2e7d32; border-radius:4px; padding:2px 7px; font-size:.7rem; }
+.preco-venda-val { font-weight:700; color:var(--marrom); font-size:.85rem; }
+
+/* ── EDIT FIELD ── */
+input.ef { border:1px solid var(--borda); border-radius:4px; padding:3px 5px; font-size:.76rem; width:62px; text-align:center; font-family:'DM Sans',sans-serif; background:#fff; }
+input.ef:focus { outline:2px solid var(--azul2); border-color:var(--azul2); }
+input.ef-venda { border-color:#8D6E63; }
+
+/* ── FORNECEDOR CARDS ── */
+.fornec-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:12px; }
+.fornec-card { border:1.5px solid var(--borda); border-radius:10px; padding:14px; background:var(--cinza); }
+.fornec-name { font-family:'Syne',sans-serif; font-weight:700; color:var(--azul); font-size:.88rem; margin-bottom:6px; }
+.fornec-meta { font-size:.76rem; color:#555; margin-bottom:3px; }
+.fornec-meta b { color:var(--azul2); }
+.fornec-actions { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+
+/* ── HIST ── */
+.hist-item { display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:8px 12px; border-radius:7px; background:var(--cinza); margin-bottom:6px; font-size:.78rem; }
+.hist-badge { background:var(--azul); color:var(--neon); font-family:'Syne',sans-serif; font-weight:700; font-size:.68rem; padding:3px 8px; border-radius:4px; white-space:nowrap; }
+
+/* ── CONFIG MODAL ── */
+.modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:1000; align-items:center; justify-content:center; padding:16px; }
+.modal-bg.open { display:flex; }
+.modal { background:#fff; border-radius:14px; padding:28px; max-width:560px; width:100%; max-height:90vh; overflow-y:auto; }
+.modal h2 { font-family:'Syne',sans-serif; color:var(--azul); font-size:1.1rem; margin-bottom:16px; }
+.modal label { display:block; font-size:.82rem; font-weight:600; color:var(--azul2); margin-bottom:4px; margin-top:12px; }
+.modal input[type=text], .modal input[type=url] { width:100%; border:1.5px solid var(--borda); border-radius:7px; padding:9px 12px; font-size:.85rem; font-family:'DM Sans',sans-serif; }
+.modal input:focus { outline:2px solid var(--azul2); border-color:var(--azul2); }
+.step-list { counter-reset:steps; }
+.step-item { counter-increment:steps; display:flex; gap:10px; margin-bottom:10px; align-items:flex-start; font-size:.82rem; }
+.step-item::before { content:counter(steps); background:var(--azul); color:var(--neon); font-family:'Syne',sans-serif; font-weight:800; font-size:.75rem; min-width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+.code-box { background:#1e1e1e; color:#a8ff78; border-radius:8px; padding:12px 14px; font-family:monospace; font-size:.75rem; overflow-x:auto; margin:8px 0; white-space:pre-wrap; word-break:break-all; }
+.copy-btn { background:var(--azul2); color:#fff; border:none; border-radius:5px; padding:4px 10px; font-size:.72rem; cursor:pointer; margin-top:4px; }
+
+/* ── EMPTY ── */
+.empty { text-align:center; padding:28px; color:#aaa; font-size:.85rem; }
+
+/* ── LANDSCAPE HINT ── */
+.landscape-hint { display:none; background:var(--neon2); color:var(--azul); text-align:center; padding:6px; font-size:.75rem; font-weight:600; }
+@media (max-width:768px) and (orientation:portrait) {
+  .landscape-hint { display:block; }
+}
+@media (max-width:600px) {
+  header h1 { font-size:.85rem; }
+  .tab-btn { font-size:.72rem; padding:7px 10px; }
+  .card { padding:14px; border-radius:0 8px 8px 8px; }
+  main { padding:12px 8px 60px; }
+}
+</style>
+</head>
+<body>
+
+<!-- LANDSCAPE HINT -->
+<div class="landscape-hint">📱 Gire o dispositivo para modo paisagem para melhor visualização</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">LS</div>
+  <h1>Loja Sabrina — Controle de Fornecedores</h1>
+  <span id="sync-badge" class="sync-status sync-off">⚫ Offline</span>
+  <button id="btn-config-header" onclick="abrirConfig()">⚙️ Configurar</button>
+</header>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('importar')">📥 Importar XML</button>
+  <button class="tab-btn" onclick="switchTab('matriz')">📋 Matriz</button>
+  <button class="tab-btn" onclick="switchTab('fornecedores')">🏭 Fornecedores</button>
+  <button class="tab-btn" onclick="switchTab('historico')">📊 Histórico</button>
+</div>
+
+<main>
+
+  <!-- STATS -->
+  <div class="stats" id="stats-row">
+    <div class="stat"><div class="stat-v" id="st-fornec">0</div><div class="stat-l">Fornecedores</div></div>
+    <div class="stat"><div class="stat-v" id="st-itens">0</div><div class="stat-l">Itens</div></div>
+    <div class="stat"><div class="stat-v" id="st-nfs">0</div><div class="stat-l">NFs importadas</div></div>
+    <div class="stat"><div class="stat-v" id="st-st">0</div><div class="stat-l">Itens c/ ST</div></div>
+    <div class="stat"><div class="stat-v" id="st-alerta">0</div><div class="stat-l">Alertas reajuste</div></div>
+  </div>
+
+  <!-- TAB IMPORTAR -->
+  <div class="tab-content active card" id="tab-importar">
+    <div class="card-title">Importar Nota Fiscal XML</div>
+    <div class="alert alert-info">💡 Arraste ou selecione o XML da NF-e. A ferramenta lê fornecedor, produtos, IPI e ICMS-ST automaticamente.</div>
+    <div id="sync-warn-import"></div>
+    <div class="drop-zone" id="drop-zone" onclick="document.getElementById('xml-input').click()">
+      <input type="file" id="xml-input" accept=".xml" multiple>
+      <div class="drop-icon">📄</div>
+      <div class="drop-text">Clique ou arraste o XML da NF-e aqui</div>
+      <div class="drop-sub">Aceita múltiplos arquivos — NF-e padrão SEFAZ</div>
+    </div>
+    <div id="preview-area" style="display:none;margin-top:18px;">
+      <div class="card-title" style="margin-bottom:10px;">Dados extraídos — revise antes de salvar</div>
+      <div id="preview-content"></div>
+      <div class="btn-row">
+        <button class="btn btn-success" onclick="salvarNaMatriz()">✅ Confirmar e salvar</button>
+        <button class="btn btn-warn" onclick="limparPreview()">🗑️ Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB MATRIZ -->
+  <div class="tab-content card" id="tab-matriz" style="display:none;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:14px;">
+      <div class="card-title" style="margin:0;">Planilha Matriz — Todos os Fornecedores</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="btn btn-primary btn-sm" onclick="carregarDoSheets()">🔄 Atualizar</button>
+        <button class="btn btn-success btn-sm" onclick="exportarMatriz()">📥 Baixar .xlsx</button>
+        <button class="btn btn-danger btn-sm" onclick="limparMatriz()">🗑️ Limpar</button>
+      </div>
+    </div>
+    <div id="matriz-alert"></div>
+    <div class="alert alert-info" style="font-size:.76rem;margin-bottom:10px;">
+      🔶 <b>ST</b> = produto com Substituição Tributária — ICMS-ST já incluído no custo unitário real.
+      Colunas em <span style="color:var(--marrom-h);font-weight:700">marrom</span> = Preço de Venda.
+    </div>
+    <div class="table-outer">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Fornecedor</th>
+            <th>Produto</th>
+            <th>UN</th>
+            <th>Qtde/<br>Embal.</th>
+            <th>Preço NF<br>(R$)</th>
+            <th>IPI<br>(%)</th>
+            <th class="th-st">ST?</th>
+            <th class="th-st">ICMS-ST<br>Unit.(R$)</th>
+            <th>Custo Unit.<br>Real (R$)</th>
+            <th>% Reajuste<br>Fornec.</th>
+            <th>Novo Preço<br>Est. (R$)</th>
+            <th>Variação<br>(R$)</th>
+            <th>Data NF</th>
+            <th>Nº NF</th>
+            <th>Status</th>
+            <th class="th-venda">% Markup</th>
+            <th class="th-venda">Preço de<br>Venda (R$)</th>
+          </tr>
+        </thead>
+        <tbody id="matriz-body">
+          <tr><td colspan="18" class="empty">Nenhum dado. Importe um XML ou clique em Atualizar.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB FORNECEDORES -->
+  <div class="tab-content card" id="tab-fornecedores" style="display:none;">
+    <div class="card-title">Planilhas por Fornecedor</div>
+    <div class="alert alert-info">Cada fornecedor tem histórico individual. Baixe a planilha de qualquer um.</div>
+    <div class="fornec-grid" id="fornec-grid">
+      <div class="empty">Nenhum fornecedor cadastrado ainda.</div>
+    </div>
+  </div>
+
+  <!-- TAB HISTÓRICO -->
+  <div class="tab-content card" id="tab-historico" style="display:none;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:14px;">
+      <div class="card-title" style="margin:0;">Histórico de Importações</div>
+      <button class="btn btn-primary btn-sm" onclick="exportarHistorico()">📥 Baixar .xlsx</button>
+    </div>
+    <div id="historico-lista"><div class="empty">Nenhuma importação registrada.</div></div>
+  </div>
+
+</main>
+
+<!-- MODAL CONFIG -->
+<div class="modal-bg" id="modal-config">
+  <div class="modal">
+    <h2>⚙️ Configurar Sincronização com Google Sheets</h2>
+
+    <div class="alert alert-warn" style="margin-bottom:14px;">
+      Configure UMA VEZ. Após isso, todos os dispositivos sincronizam automaticamente.
+    </div>
+
+    <label>URL do Google Apps Script (Web App):</label>
+    <input type="url" id="input-script-url" placeholder="https://script.google.com/macros/s/SEU_ID/exec">
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+      <button class="btn btn-success btn-sm" onclick="salvarConfig()">💾 Salvar e testar conexão</button>
+      <button class="btn btn-warn btn-sm" onclick="fecharConfig()">Fechar</button>
+    </div>
+
+    <hr style="margin:20px 0;border-color:var(--borda);">
+
+    <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--azul);font-size:.88rem;margin-bottom:12px;">
+      📖 Como configurar — passo a passo
+    </div>
+
+    <div class="step-list">
+      <div class="step-item">Acesse <a href="https://sheets.google.com" target="_blank" style="color:var(--azul2)">sheets.google.com</a> e crie uma planilha nova. Dê o nome <b>Loja Sabrina — Fornecedores</b>.</div>
+      <div class="step-item">Dentro da planilha, clique em <b>Extensões → Apps Script</b>.</div>
+      <div class="step-item">Apague o código que aparecer e cole o código abaixo no lugar:
+        <div style="margin-top:6px;">
+          <div class="code-box" id="apps-script-code">// Cole este código no Google Apps Script
+
+const SHEET_NAME_MATRIZ   = 'Matriz';
+const SHEET_NAME_HISTORICO = 'Historico';
+
+function doGet(e) {
+  const action = e.parameter.action || 'getData';
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  if (action === 'getData') {
+    const mat = getSheetData(ss, SHEET_NAME_MATRIZ);
+    const his = getSheetData(ss, SHEET_NAME_HISTORICO);
+    return jsonResponse({ matriz: mat, historico: his });
+  }
+  return jsonResponse({ error: 'Ação desconhecida' });
+}
+
+function doPost(e) {
+  try {
+    const body   = JSON.parse(e.postData.contents);
+    const action = body.action;
+    const ss     = SpreadsheetApp.getActiveSpreadsheet();
+
+    if (action === 'saveMatriz') {
+      saveSheetData(ss, SHEET_NAME_MATRIZ, body.data, getMatrizHeaders());
+      return jsonResponse({ ok: true });
+    }
+    if (action === 'saveHistorico') {
+      saveSheetData(ss, SHEET_NAME_HISTORICO, body.data, getHistoricoHeaders());
+      return jsonResponse({ ok: true });
+    }
+    if (action === 'saveAll') {
+      saveSheetData(ss, SHEET_NAME_MATRIZ,    body.matriz,    getMatrizHeaders());
+      saveSheetData(ss, SHEET_NAME_HISTORICO, body.historico, getHistoricoHeaders());
+      return jsonResponse({ ok: true });
+    }
+    return jsonResponse({ error: 'Ação inválida' });
+  } catch(err) {
+    return jsonResponse({ error: err.message });
+  }
+}
+
+function getMatrizHeaders() {
+  return ['fornecedor','cnpj','produto','un','qtde','precoNF','ipi',
+          'temST','vICMSST','pICMSST','stPorUnidade','custoUnit',
+          'reajuste','novoPreco','variacao','dataNF','nNF','status',
+          'markup','precoVenda','csosn','timestamp'];
+}
+function getHistoricoHeaders() {
+  return ['data','hora','qtdeItens','fornecs','nfs'];
+}
+
+function getSheetData(ss, name) {
+  let sheet = ss.getSheetByName(name);
+  if (!sheet) return [];
+  const vals = sheet.getDataRange().getValues();
+  if (vals.length < 2) return [];
+  const headers = vals[0];
+  return vals.slice(1).map(row => {
+    const obj = {};
+    headers.forEach((h, i) => { obj[h] = row[i]; });
+    return obj;
+  });
+}
+
+function saveSheetData(ss, name, data, headers) {
+  let sheet = ss.getSheetByName(name);
+  if (!sheet) sheet = ss.insertSheet(name);
+  sheet.clearContents();
+  if (!data || !data.length) {
+    sheet.getRange(1,1,1,headers.length).setValues([headers]);
+    return;
+  }
+  const rows = data.map(obj => headers.map(h => obj[h] !== undefined ? obj[h] : ''));
+  sheet.getRange(1,1,1,headers.length).setValues([headers]);
+  sheet.getRange(2,1,rows.length,headers.length).setValues(rows);
+}
+
+function jsonResponse(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}</div>
+          <button class="copy-btn" onclick="copiarCodigo()">📋 Copiar código</button>
+        </div>
+      </div>
+      <div class="step-item">Clique em <b>Salvar</b> (ícone de disquete) e dê um nome ao projeto, ex: <b>LojaSabrina</b>.</div>
+      <div class="step-item">Clique em <b>Implantar → Nova implantação</b>. Em "Tipo", escolha <b>App da Web</b>. Em "Quem pode acessar", selecione <b>Qualquer pessoa</b>. Clique em <b>Implantar</b>.</div>
+      <div class="step-item">Autorize o acesso quando solicitado (clique em "Permitir").</div>
+      <div class="step-item">Copie a <b>URL do app da web</b> gerada e cole no campo acima. Clique em <b>Salvar e testar conexão</b>. ✅</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// ESTADO
+// ═══════════════════════════════════════════════════════════
+let matrizData   = JSON.parse(localStorage.getItem('ls_matriz')    || '[]');
+let historicoLog = JSON.parse(localStorage.getItem('ls_historico') || '[]');
+let scriptURL    = localStorage.getItem('ls_script_url') || '';
+let pendingItems = [];
+let syncAtivo    = false;
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+document.getElementById('data-hoje') && (document.getElementById('data-hoje').textContent =
+  new Date().toLocaleDateString('pt-BR'));
+
+atualizarStats();
+atualizarSyncBadge();
+if (scriptURL) carregarDoSheets();
+
+// ═══════════════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════════════
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    const ids = ['importar','matriz','fornecedores','historico'];
+    b.classList.toggle('active', ids[i] === name);
+  });
+  document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+  document.getElementById('tab-' + name).style.display = 'block';
+  if (name === 'matriz')       renderMatriz();
+  if (name === 'fornecedores') renderFornecedores();
+  if (name === 'historico')    renderHistorico();
+}
+
+// ═══════════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════════
+function abrirConfig() {
+  document.getElementById('input-script-url').value = scriptURL;
+  document.getElementById('modal-config').classList.add('open');
+}
+function fecharConfig() {
+  document.getElementById('modal-config').classList.remove('open');
+}
+document.getElementById('modal-config').addEventListener('click', e => {
+  if (e.target === e.currentTarget) fecharConfig();
+});
+
+async function salvarConfig() {
+  const url = document.getElementById('input-script-url').value.trim();
+  if (!url) return alert('Cole a URL do Apps Script.');
+  scriptURL = url;
+  localStorage.setItem('ls_script_url', url);
+  atualizarSyncBadge('testando');
+  const ok = await testarConexao();
+  if (ok) {
+    atualizarSyncBadge('ok');
+    fecharConfig();
+    carregarDoSheets();
+  } else {
+    atualizarSyncBadge('erro');
+    alert('Não foi possível conectar. Verifique a URL e se o Apps Script está publicado corretamente.');
+  }
+}
+
+function copiarCodigo() {
+  const txt = document.getElementById('apps-script-code').textContent;
+  navigator.clipboard.writeText(txt).then(() => alert('Código copiado! Cole no Google Apps Script.'));
+}
+
+// ═══════════════════════════════════════════════════════════
+// SYNC BADGE
+// ═══════════════════════════════════════════════════════════
+function atualizarSyncBadge(estado) {
+  const el = document.getElementById('sync-badge');
+  if (!scriptURL && !estado) {
+    el.className = 'sync-status sync-off'; el.textContent = '⚫ Sem sync'; return;
+  }
+  if (estado === 'testando') {
+    el.className = 'sync-status sync-warn'; el.textContent = '🔄 Conectando...'; return;
+  }
+  if (estado === 'ok' || (scriptURL && !estado)) {
+    el.className = 'sync-status sync-ok'; el.textContent = '🟢 Sincronizado'; syncAtivo = true; return;
+  }
+  if (estado === 'salvando') {
+    el.className = 'sync-status sync-warn'; el.textContent = '💾 Salvando...'; return;
+  }
+  el.className = 'sync-status sync-off'; el.textContent = '🔴 Erro sync';
+}
+
+// ═══════════════════════════════════════════════════════════
+// GOOGLE SHEETS — API
+// ═══════════════════════════════════════════════════════════
+async function testarConexao() {
+  try {
+    const r = await fetch(scriptURL + '?action=getData');
+    const d = await r.json();
+    return !d.error;
+  } catch { return false; }
+}
+
+async function carregarDoSheets() {
+  if (!scriptURL) return;
+  atualizarSyncBadge('testando');
+  try {
+    const r = await fetch(scriptURL + '?action=getData');
+    const d = await r.json();
+    if (d.error) throw new Error(d.error);
+    if (d.matriz && d.matriz.length)   matrizData   = d.matriz.map(normalizeRow);
+    if (d.historico && d.historico.length) historicoLog = d.historico;
+    localStorage.setItem('ls_matriz',    JSON.stringify(matrizData));
+    localStorage.setItem('ls_historico', JSON.stringify(historicoLog));
+    atualizarStats();
+    atualizarSyncBadge('ok');
+    renderAtivo();
+  } catch(e) {
+    atualizarSyncBadge('erro');
+  }
+}
+
+function normalizeRow(r) {
+  return {
+    ...r,
+    qtde:         parseFloat(r.qtde)         || 1,
+    precoNF:      parseFloat(r.precoNF)      || 0,
+    ipi:          parseFloat(r.ipi)          || 0,
+    vICMSST:      parseFloat(r.vICMSST)      || 0,
+    pICMSST:      parseFloat(r.pICMSST)      || 0,
+    stPorUnidade: parseFloat(r.stPorUnidade) || 0,
+    custoUnit:    parseFloat(r.custoUnit)    || 0,
+    reajuste:     parseFloat(r.reajuste)     || 0,
+    novoPreco:    parseFloat(r.novoPreco)    || 0,
+    variacao:     parseFloat(r.variacao)     || 0,
+    markup:       parseFloat(r.markup)       || 0,
+    precoVenda:   parseFloat(r.precoVenda)   || 0,
+    temST:        r.temST === true || r.temST === 'true' || r.temST === 'TRUE',
+  };
+}
+
+async function salvarNoSheets() {
+  if (!scriptURL) return;
+  atualizarSyncBadge('salvando');
+  try {
+    await fetch(scriptURL, {
+      method: 'POST',
+      body: JSON.stringify({ action:'saveAll', matriz: matrizData, historico: historicoLog })
+    });
+    atualizarSyncBadge('ok');
+  } catch { atualizarSyncBadge('erro'); }
+}
+
+// ═══════════════════════════════════════════════════════════
+// DRAG & DROP
+// ═══════════════════════════════════════════════════════════
+const dz = document.getElementById('drop-zone');
+dz.addEventListener('dragover',  e => { e.preventDefault(); dz.classList.add('drag-over'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag-over'); handleFiles(e.dataTransfer.files); });
+document.getElementById('xml-input').addEventListener('change', e => handleFiles(e.target.files));
+
+// ═══════════════════════════════════════════════════════════
+// PARSE XML
+// ═══════════════════════════════════════════════════════════
+function handleFiles(files) {
+  pendingItems = [];
+  let count = files.length, done = 0;
+  if (!count) return;
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      pendingItems = pendingItems.concat(parseNFe(e.target.result, file.name));
+      if (++done === count) mostrarPreview();
+    };
+    reader.readAsText(file, 'UTF-8');
+  });
+}
+
+function parseNFe(xml, filename) {
+  const parser = new DOMParser();
+  const doc    = parser.parseFromString(xml, 'application/xml');
+  const ns     = 'http://www.portalfiscal.inf.br/nfe';
+
+  function g(parent, tag) {
+    let el = parent.getElementsByTagNameNS(ns, tag)[0];
+    if (!el) el = parent.getElementsByTagName(tag)[0];
+    return el ? el.textContent.trim() : '';
+  }
+
+  const emit   = doc.querySelector('emit') || doc;
+  const fornec = g(emit,'xNome') || 'Fornecedor não identificado';
+  const cnpj   = g(emit,'CNPJ') || '';
+  const dhEmi  = g(doc,'dhEmi') || g(doc,'dEmi') || '';
+  const nNF    = g(doc,'nNF')   || '';
+  const dataNF = dhEmi ? dhEmi.substring(0,10).split('-').reverse().join('/') : '';
+
+  const allDets = Array.from(doc.querySelectorAll('det').length
+    ? doc.querySelectorAll('det')
+    : doc.getElementsByTagName('det'));
+
+  if (!allDets.length) return [{
+    fornecedor:fornec, cnpj, produto:'Produto não lido', un:'UN',
+    qtde:1, precoNF:0, ipi:0, frete:0, custoUnit:0,
+    temST:false, vICMSST:0, pICMSST:0, stPorUnidade:0, vFCP:0,
+    csosn:'', cst:'', dataNF, nNF, arquivo:filename
+  }];
+
+  const CSOSN_ST = ['201','202','203','500','900'];
+  const CST_ST   = ['10','30','60','70','90'];
+
+  return allDets.map(det => {
+    const prod   = g(det,'xProd');
+    const un     = g(det,'uCom');
+    const qtde   = parseFloat(g(det,'qCom').replace(',','.'))   || 1;
+    const vUnCom = parseFloat(g(det,'vUnCom').replace(',','.')) || 0;
+    const vIPI   = parseFloat(g(det,'vIPI').replace(',','.'))   || 0;
+    const pIPI   = parseFloat(g(det,'pIPI').replace(',','.'))   || 0;
+    const csosn  = g(det,'CSOSN');
+    const cst    = g(det,'CST');
+    const vICMSST  = parseFloat(g(det,'vICMSST').replace(',','.'))  || 0;
+    const pICMSST  = parseFloat(g(det,'pICMSST').replace(',','.'))  || 0;
+    const vFCP     = parseFloat(g(det,'vFCPST').replace(',','.'))   || 0;
+    const temST    = CSOSN_ST.includes(csosn) || CST_ST.includes(cst) || vICMSST > 0;
+    const stUnit   = temST && qtde > 0 ? (vICMSST + vFCP) / qtde : 0;
+    const ipiUnit  = qtde > 0 ? vIPI / qtde : 0;
+    const custoUnit = vUnCom + ipiUnit + stUnit;
+    return { fornecedor:fornec, cnpj, produto:prod, un, qtde,
+      precoNF:vUnCom, ipi:pIPI, frete:0,
+      vICMSST, pICMSST, vFCP, csosn, cst, temST,
+      stPorUnidade:stUnit, custoUnit, dataNF, nNF, arquivo:filename };
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// PREVIEW
+// ═══════════════════════════════════════════════════════════
+function mostrarPreview() {
+  if (!pendingItems.length) return;
+  document.getElementById('preview-area').style.display = 'block';
+  let html = `<div class="table-outer"><table>
+    <thead><tr>
+      <th>Fornecedor</th><th>Produto</th><th>UN</th>
+      <th>Qtde/Embal.</th><th>Preço Unit. NF</th>
+      <th>IPI%</th><th class="th-st">ST?</th>
+      <th class="th-st">ICMS-ST Unit.</th>
+      <th>Custo Unit. Real</th>
+      <th>Data NF</th><th>Nº NF</th>
+    </tr></thead><tbody>`;
+  pendingItems.forEach((it,i) => {
+    const stTag = it.temST
+      ? `<span class="tag-st">🔶 ST</span>`
+      : `<span class="tag-normal">✅ Normal</span>`;
+    html += `<tr>
+      <td class="left">${it.fornecedor}</td>
+      <td class="left">${it.produto}</td>
+      <td>${it.un}</td>
+      <td><input class="ef" id="q_${i}" value="${it.qtde}" onchange="recalcPrev(${i})"></td>
+      <td>R$ ${it.precoNF.toFixed(4)}</td>
+      <td>${it.ipi.toFixed(1)}</td>
+      <td class="td-st">${stTag}</td>
+      <td class="td-st">${it.temST ? 'R$ '+it.stPorUnidade.toFixed(4) : '—'}</td>
+      <td id="cu_${i}" style="font-weight:700;color:var(--azul)">R$ ${it.custoUnit.toFixed(4)}</td>
+      <td>${it.dataNF}</td><td>${it.nNF}</td>
+    </tr>`;
+  });
+  html += '</tbody></table></div>';
+  document.getElementById('preview-content').innerHTML = html;
+}
+
+function recalcPrev(i) {
+  const qtde = parseFloat(document.getElementById('q_'+i).value) || 1;
+  pendingItems[i].qtde = qtde;
+  const st  = pendingItems[i].temST ? (pendingItems[i].vICMSST + pendingItems[i].vFCP) / qtde : 0;
+  const ipi = pendingItems[i].vIPI  ? pendingItems[i].vIPI / qtde : 0;
+  const cu  = pendingItems[i].precoNF + ipi + st;
+  pendingItems[i].custoUnit = cu; pendingItems[i].stPorUnidade = st;
+  document.getElementById('cu_'+i).textContent = 'R$ ' + cu.toFixed(4);
+}
+
+function limparPreview() {
+  pendingItems = [];
+  document.getElementById('preview-area').style.display = 'none';
+  document.getElementById('xml-input').value = '';
+}
+
+// ═══════════════════════════════════════════════════════════
+// SALVAR
+// ═══════════════════════════════════════════════════════════
+async function salvarNaMatriz() {
+  if (!pendingItems.length) return;
+  if (!scriptURL) {
+    document.getElementById('sync-warn-import').innerHTML =
+      `<div class="alert alert-warn">⚠️ Sincronização não configurada. Os dados serão salvos apenas neste dispositivo. <button class="btn btn-primary btn-sm" onclick="abrirConfig()" style="margin-left:8px">Configurar agora</button></div>`;
+  }
+  pendingItems.forEach(it => {
+    matrizData.push({
+      fornecedor:it.fornecedor, cnpj:it.cnpj, produto:it.produto,
+      un:it.un, qtde:it.qtde, precoNF:it.precoNF, ipi:it.ipi, frete:0,
+      temST:it.temST, vICMSST:it.vICMSST, pICMSST:it.pICMSST,
+      stPorUnidade:it.stPorUnidade, custoUnit:it.custoUnit,
+      reajuste:0, novoPreco:it.custoUnit, variacao:0,
+      dataNF:it.dataNF, nNF:it.nNF, status:'✅ OK',
+      markup:0, precoVenda:0, csosn:it.csosn,
+      timestamp:new Date().toISOString()
+    });
+  });
+  historicoLog.push({
+    data:new Date().toLocaleDateString('pt-BR'),
+    hora:new Date().toLocaleTimeString('pt-BR'),
+    qtdeItens:pendingItems.length,
+    fornecs:[...new Set(pendingItems.map(i=>i.fornecedor))].join(', '),
+    nfs:[...new Set(pendingItems.map(i=>i.nNF).filter(Boolean))].join(', ')
+  });
+  localStorage.setItem('ls_matriz',    JSON.stringify(matrizData));
+  localStorage.setItem('ls_historico', JSON.stringify(historicoLog));
+  atualizarStats();
+  const qtde = pendingItems.length;
+  pendingItems = [];
+  limparPreview();
+  document.getElementById('sync-warn-import').innerHTML =
+    `<div class="alert alert-success">✅ ${qtde} itens salvos!</div>`;
+  if (scriptURL) await salvarNoSheets();
+  setTimeout(() => switchTab('matriz'), 1200);
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER MATRIZ
+// ═══════════════════════════════════════════════════════════
+function renderMatriz() {
+  const tbody = document.getElementById('matriz-body');
+  if (!matrizData.length) {
+    tbody.innerHTML = '<tr><td colspan="18" class="empty">Nenhum dado. Importe um XML ou clique em Atualizar.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = matrizData.map((r,i) => {
+    const novo    = r.custoUnit * (1 + (r.reajuste||0)/100);
+    const varVal  = novo - r.custoUnit;
+    const varCls  = varVal > 0 ? 'color:#c62828;font-weight:700' : varVal < 0 ? 'color:#2e7d32;font-weight:700' : '';
+    const markup  = r.markup || 0;
+    const base    = novo > 0 ? novo : r.custoUnit;
+    const pVenda  = base * (1 + markup/100);
+    const stTag   = r.temST
+      ? `<span class="tag-st">🔶 ST</span>`
+      : `<span class="tag-normal">✅</span>`;
+    return `<tr>
+      <td>${i+1}</td>
+      <td class="left" style="max-width:140px;overflow:hidden;text-overflow:ellipsis">${r.fornecedor}</td>
+      <td class="left" style="max-width:160px;overflow:hidden;text-overflow:ellipsis">${r.produto}</td>
+      <td>${r.un}</td>
+      <td>${r.qtde}</td>
+      <td>R$&nbsp;${(+r.precoNF).toFixed(4)}</td>
+      <td>${(+r.ipi).toFixed(1)}%</td>
+      <td class="td-st">${stTag}</td>
+      <td class="td-st">${r.temST ? 'R$&nbsp;'+(+r.stPorUnidade).toFixed(4) : '—'}</td>
+      <td><b>R$&nbsp;${(+r.custoUnit).toFixed(4)}</b></td>
+      <td><input class="ef" value="${r.reajuste||0}"
+          onchange="atualizarReajuste(${i},this.value)">%</td>
+      <td>R$&nbsp;${novo.toFixed(4)}</td>
+      <td style="${varCls}">${varVal>=0?'+':''}R$&nbsp;${varVal.toFixed(4)}</td>
+      <td>${r.dataNF}</td>
+      <td>${r.nNF}</td>
+      <td><span class="${varVal>0?'tag-alerta':'tag-ok'}">${varVal>0?'⚠️ Alta':'✅ OK'}</span></td>
+      <td class="td-venda"><input class="ef ef-venda" value="${markup}"
+          onchange="atualizarMarkup(${i},this.value)">%</td>
+      <td class="td-venda"><span class="preco-venda-val">R$&nbsp;${pVenda.toFixed(2)}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+async function atualizarReajuste(i, val) {
+  matrizData[i].reajuste  = parseFloat(val)||0;
+  matrizData[i].novoPreco = matrizData[i].custoUnit*(1+matrizData[i].reajuste/100);
+  matrizData[i].variacao  = matrizData[i].novoPreco - matrizData[i].custoUnit;
+  matrizData[i].status    = matrizData[i].variacao>0?'⚠️ Alta':'✅ OK';
+  localStorage.setItem('ls_matriz',JSON.stringify(matrizData));
+  atualizarStats(); renderMatriz();
+  if (scriptURL) await salvarNoSheets();
+}
+
+async function atualizarMarkup(i, val) {
+  matrizData[i].markup    = parseFloat(val)||0;
+  const base = matrizData[i].novoPreco>0?matrizData[i].novoPreco:matrizData[i].custoUnit;
+  matrizData[i].precoVenda = base*(1+matrizData[i].markup/100);
+  localStorage.setItem('ls_matriz',JSON.stringify(matrizData));
+  renderMatriz();
+  if (scriptURL) await salvarNoSheets();
+}
+
+async function limparMatriz() {
+  if (!confirm('Apagar todos os dados? Isso afeta todos os dispositivos.')) return;
+  matrizData=[]; historicoLog=[];
+  localStorage.removeItem('ls_matriz'); localStorage.removeItem('ls_historico');
+  atualizarStats(); renderMatriz();
+  if (scriptURL) await salvarNoSheets();
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER FORNECEDORES
+// ═══════════════════════════════════════════════════════════
+function renderFornecedores() {
+  const grid = document.getElementById('fornec-grid');
+  if (!matrizData.length) { grid.innerHTML='<div class="empty">Nenhum fornecedor ainda.</div>'; return; }
+  const fornecs = {};
+  matrizData.forEach(r => { if(!fornecs[r.fornecedor]) fornecs[r.fornecedor]=[]; fornecs[r.fornecedor].push(r); });
+  grid.innerHTML = Object.entries(fornecs).map(([nome,itens]) => {
+    const ultData = itens[itens.length-1].dataNF;
+    const alertas = itens.filter(i=>i.variacao>0).length;
+    const comST   = itens.filter(i=>i.temST).length;
+    return `<div class="fornec-card">
+      <div class="fornec-name">🏭 ${nome}</div>
+      <div class="fornec-meta">Itens: <b>${itens.length}</b> &nbsp;|&nbsp; Última NF: <b>${ultData}</b></div>
+      ${comST   ? `<div class="fornec-meta"><span class="tag-st" style="font-size:.7rem">🔶 ${comST} item(s) com ST</span></div>` : ''}
+      ${alertas ? `<div class="fornec-meta" style="color:#c62828">⚠️ ${alertas} item(s) com reajuste</div>` : ''}
+      <div class="fornec-actions">
+        <button class="btn btn-primary btn-sm" onclick="exportarFornecedor('${nome.replace(/'/g,"\\'")}')">📥 .xlsx</button>
+        <button class="btn btn-warn btn-sm" onclick="switchTab('matriz')">👁️ Ver</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER HISTÓRICO
+// ═══════════════════════════════════════════════════════════
+function renderHistorico() {
+  const el = document.getElementById('historico-lista');
+  if (!historicoLog.length) { el.innerHTML='<div class="empty">Nenhuma importação registrada.</div>'; return; }
+  el.innerHTML = [...historicoLog].reverse().map(h =>
+    `<div class="hist-item">
+      <span class="hist-badge">${h.data} ${h.hora}</span>
+      <span><b>${h.qtdeItens}</b> itens</span>
+      <span style="color:#555">${h.fornecs}</span>
+      ${h.nfs ? `<span style="color:#aaa;font-size:.72rem">NF: ${h.nfs}</span>` : ''}
+    </div>`
+  ).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// STATS
+// ═══════════════════════════════════════════════════════════
+function atualizarStats() {
+  document.getElementById('st-fornec').textContent = new Set(matrizData.map(r=>r.fornecedor)).size;
+  document.getElementById('st-itens').textContent  = matrizData.length;
+  document.getElementById('st-nfs').textContent    = new Set(matrizData.map(r=>r.nNF).filter(Boolean)).size;
+  document.getElementById('st-st').textContent     = matrizData.filter(r=>r.temST).length;
+  document.getElementById('st-alerta').textContent = matrizData.filter(r=>r.variacao>0).length;
+}
+
+function renderAtivo() {
+  const ativo = document.querySelector('.tab-btn.active');
+  if (!ativo) return;
+  const ids = ['importar','matriz','fornecedores','historico'];
+  const idx = [...document.querySelectorAll('.tab-btn')].indexOf(ativo);
+  if (idx >= 0) {
+    if (ids[idx]==='matriz')       renderMatriz();
+    if (ids[idx]==='fornecedores') renderFornecedores();
+    if (ids[idx]==='historico')    renderHistorico();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// EXPORTAR XLSX
+// ═══════════════════════════════════════════════════════════
+function exportarMatriz() {
+  if (!matrizData.length) { alert('Nenhum dado.'); return; }
+  const wb = XLSX.utils.book_new();
+  const hdrs = ['Fornecedor','Produto','UN','Qtde/Embal.','Preço NF (R$)','IPI (%)','ST?','ICMS-ST Unit.(R$)','Custo Unit. Real (R$)','% Reajuste','Novo Preço Est. (R$)','Variação (R$)','Data NF','Nº NF','Status','% Markup','Preço de Venda (R$)'];
+  const rows = matrizData.map(r => {
+    const base=r.novoPreco>0?r.novoPreco:r.custoUnit;
+    return [r.fornecedor,r.produto,r.un,r.qtde,r.precoNF,r.ipi,
+      r.temST?'🔶 ST':'✅ Normal',r.stPorUnidade||0,r.custoUnit,
+      r.reajuste,r.novoPreco,r.variacao,r.dataNF,r.nNF,r.status,
+      r.markup||0, base*(1+(r.markup||0)/100)];
+  });
+  const ws = XLSX.utils.aoa_to_sheet([hdrs,...rows]);
+  ws['!cols'] = [20,25,5,8,12,6,8,12,14,10,14,12,11,9,8,9,14].map(w=>({wch:w}));
+  XLSX.utils.book_append_sheet(wb,ws,'Matriz Geral');
+  // abas por fornecedor
+  const fornecs={};
+  matrizData.forEach(r=>{if(!fornecs[r.fornecedor])fornecs[r.fornecedor]=[];fornecs[r.fornecedor].push(r);});
+  Object.entries(fornecs).forEach(([nome,itens])=>{
+    const slug=nome.substring(0,25).replace(/[\\/?*\[\]:]/g,'_');
+    const wsF=XLSX.utils.aoa_to_sheet([
+      ['Produto','UN','Qtde','Preço NF','IPI%','ST?','ST Unit.','Custo Unit.','% Reajuste','Novo Preço','Variação','Data NF','NF','Status','% Markup','Preço Venda'],
+      ...itens.map(r=>{const b=r.novoPreco>0?r.novoPreco:r.custoUnit;return[r.produto,r.un,r.qtde,r.precoNF,r.ipi,r.temST?'ST':'Normal',r.stPorUnidade||0,r.custoUnit,r.reajuste,r.novoPreco,r.variacao,r.dataNF,r.nNF,r.status,r.markup||0,b*(1+(r.markup||0)/100)];})
+    ]);
+    XLSX.utils.book_append_sheet(wb,wsF,slug);
+  });
+  const wsH=XLSX.utils.aoa_to_sheet([['Data','Hora','Itens','Fornecedores','NFs'],...historicoLog.map(h=>[h.data,h.hora,h.qtdeItens,h.fornecs,h.nfs])]);
+  XLSX.utils.book_append_sheet(wb,wsH,'Histórico');
+  XLSX.writeFile(wb,`Loja_Sabrina_Matriz_${new Date().toISOString().split('T')[0]}.xlsx`);
+}
+
+function exportarFornecedor(nome) {
+  const itens=matrizData.filter(r=>r.fornecedor===nome);
+  if(!itens.length)return;
+  const wb=XLSX.utils.book_new();
+  const slug=nome.substring(0,25).replace(/[\\/?*\[\]:]/g,'_');
+  const produtos={};itens.forEach(r=>{produtos[r.produto]=r;});
+  const resumo=Object.values(produtos);
+  const wsR=XLSX.utils.aoa_to_sheet([
+    [`FORNECEDOR: ${nome}`],[],
+    ['Produto','UN','Qtde','Custo Unit.','% Reajuste','Novo Preço','Variação','ST?','Data NF','Status','% Markup','Preço Venda'],
+    ...resumo.map(r=>{const b=r.novoPreco>0?r.novoPreco:r.custoUnit;return[r.produto,r.un,r.qtde,r.custoUnit,r.reajuste,r.novoPreco,r.variacao,r.temST?'ST':'Normal',r.dataNF,r.status,r.markup||0,b*(1+(r.markup||0)/100)];})
+  ]);
+  wsR['!cols']=[28,5,8,14,10,12,12,8,11,8,10,14].map(w=>({wch:w}));
+  XLSX.utils.book_append_sheet(wb,wsR,'Resumo');
+  const wsH=XLSX.utils.aoa_to_sheet([['Produto','UN','Qtde','Preço NF','IPI','ST?','ST Unit.','Custo Unit.','Data NF','NF'],...itens.map(r=>[r.produto,r.un,r.qtde,r.precoNF,r.ipi,r.temST?'ST':'Normal',r.stPorUnidade||0,r.custoUnit,r.dataNF,r.nNF])]);
+  XLSX.utils.book_append_sheet(wb,wsH,'Histórico Completo');
+  XLSX.writeFile(wb,`Loja_Sabrina_${slug}_${new Date().toISOString().split('T')[0]}.xlsx`);
+}
+
+function exportarHistorico() {
+  if(!historicoLog.length){alert('Nenhum histórico.');return;}
+  const wb=XLSX.utils.book_new();
+  const ws=XLSX.utils.aoa_to_sheet([['Data','Hora','Itens','Fornecedores','NFs'],...historicoLog.map(h=>[h.data,h.hora,h.qtdeItens,h.fornecs,h.nfs])]);
+  XLSX.utils.book_append_sheet(wb,ws,'Histórico');
+  XLSX.writeFile(wb,`Loja_Sabrina_Historico_${new Date().toISOString().split('T')[0]}.xlsx`);
+}
+</script>
+</body>
+</html>
