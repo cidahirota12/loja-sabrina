@@ -845,8 +845,9 @@ function renderFornecedores() {
   const fornecs = {};
   matrizData.forEach(r => { if(!fornecs[r.fornecedor]) fornecs[r.fornecedor]=[]; fornecs[r.fornecedor].push(r); });
 
-  // Guarda lista de nomes para referenciar por índice
+  // Guarda lista de nomes e itens para referenciar por índice
   window._fornecNomes = Object.keys(fornecs);
+  window._fornecItens = Object.values(fornecs);
 
   grid.innerHTML = Object.entries(fornecs).map(([nome,itens], idx) => {
     const ultData = itens[itens.length-1].dataNF;
@@ -866,9 +867,11 @@ function renderFornecedores() {
 }
 
 function exportarFornecedorIdx(idx) {
-  const nome = window._fornecNomes && window._fornecNomes[idx];
-  if (!nome) return;
-  exportarFornecedor(nome);
+  if (!window._fornecNomes || !window._fornecNomes[idx]) return;
+  const nome  = window._fornecNomes[idx];
+  const itens = window._fornecItens && window._fornecItens[idx];
+  if (!itens || !itens.length) return;
+  exportarFornecedor(nome, itens);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -950,23 +953,49 @@ function exportarMatriz() {
   XLSX.writeFile(wb,`Loja_Sabrina_Matriz_${new Date().toISOString().split('T')[0]}.xlsx`);
 }
 
-function exportarFornecedor(nome) {
-  const itens=matrizData.filter(r=>r.fornecedor===nome);
-  if(!itens.length)return;
-  const wb=XLSX.utils.book_new();
-  const slug=nome.substring(0,25).replace(/[\\/?*\[\]:]/g,'_');
-  const produtos={};itens.forEach(r=>{produtos[r.produto]=r;});
-  const resumo=Object.values(produtos);
-  const wsR=XLSX.utils.aoa_to_sheet([
-    [`FORNECEDOR: ${nome}`],[],
-    ['Produto','UN','Qtde','Custo Unit.','% Reajuste','Novo Preço','Variação','ST?','Data NF','Status','% Markup','Preço Venda'],
-    ...resumo.map(r=>{const b=r.novoPreco>0?r.novoPreco:r.custoUnit;return[r.produto,r.un,r.qtde,r.custoUnit,r.reajuste,r.novoPreco,r.variacao,r.temST?'ST':'Normal',r.dataNF,r.status,r.markup||0,b*(1+(r.markup||0)/100)];})
+function exportarFornecedor(nome, itens) {
+  if (!itens) itens = matrizData.filter(r => r.fornecedor === nome);
+  if (!itens.length) return;
+  const wb   = XLSX.utils.book_new();
+  const slug = nome.substring(0,25).replace(/[\\/?*\[\]:]/g,'_');
+
+  // Aba Resumo — último preço por produto
+  const produtos = {}; itens.forEach(r => { produtos[r.produto] = r; });
+  const resumo   = Object.values(produtos);
+  const wsR = XLSX.utils.aoa_to_sheet([
+    [`FORNECEDOR: ${nome}`], [],
+    ['Produto','UN','Qtde NF','Un/Embal.','Total Unid.','Custo Unit.(R$)','Custo/Unid.(R$)','% Reajuste','Novo Preço','Variação','ST?','Data NF','Status','% Markup','Venda/Embal.(R$)','Venda/Unid.(R$)'],
+    ...resumo.map(r => {
+      const b        = r.novoPreco>0 ? r.novoPreco : r.custoUnit;
+      const unEmbal  = r.unEmbal || 1;
+      const totUnid  = r.qtde * unEmbal;
+      const cUnid    = b / unEmbal;
+      const pVEmb    = b * (1+(r.markup||0)/100);
+      const pVUnd    = cUnid * (1+(r.markup||0)/100);
+      return [r.produto, r.un, r.qtde, unEmbal, totUnid, r.custoUnit, cUnid,
+              r.reajuste, r.novoPreco, r.variacao,
+              r.temST?'🔶 ST':'Normal', r.dataNF, r.status,
+              r.markup||0, pVEmb, pVUnd];
+    })
   ]);
-  wsR['!cols']=[28,5,8,14,10,12,12,8,11,8,10,14].map(w=>({wch:w}));
-  XLSX.utils.book_append_sheet(wb,wsR,'Resumo');
-  const wsH=XLSX.utils.aoa_to_sheet([['Produto','UN','Qtde','Preço NF','IPI','ST?','ST Unit.','Custo Unit.','Data NF','NF'],...itens.map(r=>[r.produto,r.un,r.qtde,r.precoNF,r.ipi,r.temST?'ST':'Normal',r.stPorUnidade||0,r.custoUnit,r.dataNF,r.nNF])]);
-  XLSX.utils.book_append_sheet(wb,wsH,'Histórico Completo');
-  XLSX.writeFile(wb,`Loja_Sabrina_${slug}_${new Date().toISOString().split('T')[0]}.xlsx`);
+  wsR['!cols'] = [28,5,8,9,10,14,13,10,12,12,8,11,8,9,14,13].map(w=>({wch:w}));
+  XLSX.utils.book_append_sheet(wb, wsR, 'Resumo');
+
+  // Aba Histórico Completo
+  const wsH = XLSX.utils.aoa_to_sheet([
+    ['Produto','UN','Qtde NF','Preço NF','IPI','ST?','ST Unit.','Custo Unit.','Un/Embal.','Total Unid.','Custo/Unid.','Data NF','NF'],
+    ...itens.map(r => {
+      const unEmbal = r.unEmbal || 1;
+      return [r.produto, r.un, r.qtde, r.precoNF, r.ipi,
+              r.temST?'ST':'Normal', r.stPorUnidade||0, r.custoUnit,
+              unEmbal, r.qtde*unEmbal, r.custoUnit/unEmbal,
+              r.dataNF, r.nNF];
+    })
+  ]);
+  wsH['!cols'] = [28,5,8,12,6,8,12,14,9,10,13,11,9].map(w=>({wch:w}));
+  XLSX.utils.book_append_sheet(wb, wsH, 'Histórico Completo');
+
+  XLSX.writeFile(wb, `Loja_Sabrina_${slug}_${new Date().toISOString().split('T')[0]}.xlsx`);
 }
 
 function exportarHistorico() {
@@ -979,3 +1008,4 @@ function exportarHistorico() {
 </script>
 </body>
 </html>
+
