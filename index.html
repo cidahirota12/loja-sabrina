@@ -118,8 +118,10 @@ tbody td { padding:7px 8px; text-align:center; border-bottom:1px solid var(--bor
 tbody td.left { text-align:left; }
 tbody td.td-venda { background:#FFF8E1; }
 tbody td.td-st { background:#f3e5f5; }
+tbody td.td-desm { background:#f1f8e9; }
 tbody tr:hover td.td-venda { background:#fff3cd; }
 tbody tr:hover td.td-st { background:#ede7f6; }
+tbody tr:hover td.td-desm { background:#dcedc8; }
 
 /* ── TAGS ── */
 .tag-ok     { background:#e8f5e9; color:#2e7d32; border-radius:4px; padding:2px 7px; font-size:.7rem; font-weight:600; }
@@ -257,6 +259,9 @@ input.ef-venda { border-color:#8D6E63; }
             <th class="th-st">ST?</th>
             <th class="th-st">ICMS-ST<br>Unit.(R$)</th>
             <th>Custo Unit.<br>Real (R$)</th>
+            <th class="th-desm">Un/<br>Embal.</th>
+            <th class="th-desm">Total<br>Unidades</th>
+            <th class="th-desm">Custo/<br>Unid. (R$)</th>
             <th>% Reajuste<br>Fornec.</th>
             <th>Novo Preço<br>Est. (R$)</th>
             <th>Variação<br>(R$)</th>
@@ -264,11 +269,12 @@ input.ef-venda { border-color:#8D6E63; }
             <th>Nº NF</th>
             <th>Status</th>
             <th class="th-venda">% Markup</th>
-            <th class="th-venda">Preço de<br>Venda (R$)</th>
+            <th class="th-venda">Venda/<br>Embal. (R$)</th>
+            <th class="th-venda">Venda/<br>Unid. (R$)</th>
           </tr>
         </thead>
         <tbody id="matriz-body">
-          <tr><td colspan="18" class="empty">Nenhum dado. Importe um XML ou clique em Atualizar.</td></tr>
+          <tr><td colspan="21" class="empty">Nenhum dado. Importe um XML ou clique em Atualizar.</td></tr>
         </tbody>
       </table>
     </div>
@@ -552,6 +558,7 @@ function normalizeRow(r) {
     markup:       parseFloat(r.markup)       || 0,
     precoVenda:   parseFloat(r.precoVenda)   || 0,
     temST:        r.temST === true || r.temST === 'true' || r.temST === 'TRUE',
+    unEmbal:      parseInt(r.unEmbal) || 1,
   };
 }
 
@@ -718,6 +725,7 @@ async function salvarNaMatriz() {
       reajuste:0, novoPreco:it.custoUnit, variacao:0,
       dataNF:it.dataNF, nNF:it.nNF, status:'✅ OK',
       markup:0, precoVenda:0, csosn:it.csosn,
+      unEmbal: 1,
       timestamp:new Date().toISOString()
     });
   });
@@ -746,23 +754,28 @@ async function salvarNaMatriz() {
 function renderMatriz() {
   const tbody = document.getElementById('matriz-body');
   if (!matrizData.length) {
-    tbody.innerHTML = '<tr><td colspan="18" class="empty">Nenhum dado. Importe um XML ou clique em Atualizar.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="21" class="empty">Nenhum dado. Importe um XML ou clique em Atualizar.</td></tr>';
     return;
   }
   tbody.innerHTML = matrizData.map((r,i) => {
-    const novo    = r.custoUnit * (1 + (r.reajuste||0)/100);
-    const varVal  = novo - r.custoUnit;
-    const varCls  = varVal > 0 ? 'color:#c62828;font-weight:700' : varVal < 0 ? 'color:#2e7d32;font-weight:700' : '';
-    const markup  = r.markup || 0;
-    const base    = novo > 0 ? novo : r.custoUnit;
-    const pVenda  = base * (1 + markup/100);
-    const stTag   = r.temST
+    const novo      = r.custoUnit * (1 + (r.reajuste||0)/100);
+    const varVal    = novo - r.custoUnit;
+    const varCls    = varVal > 0 ? 'color:#c62828;font-weight:700' : varVal < 0 ? 'color:#2e7d32;font-weight:700' : '';
+    const markup    = r.markup || 0;
+    const base      = novo > 0 ? novo : r.custoUnit;
+    const pVendaEmb = base * (1 + markup/100);
+    // desmembramento
+    const unEmbal   = r.unEmbal || 1;
+    const totalUnid = r.qtde * unEmbal;
+    const custoUnid = unEmbal > 1 ? base / unEmbal : base;
+    const pVendaUnid = custoUnid * (1 + markup/100);
+    const stTag     = r.temST
       ? `<span class="tag-st">🔶 ST</span>`
       : `<span class="tag-normal">✅</span>`;
     return `<tr>
       <td>${i+1}</td>
-      <td class="left" style="max-width:140px;overflow:hidden;text-overflow:ellipsis">${r.fornecedor}</td>
-      <td class="left" style="max-width:160px;overflow:hidden;text-overflow:ellipsis">${r.produto}</td>
+      <td class="left" style="max-width:130px;overflow:hidden;text-overflow:ellipsis">${r.fornecedor}</td>
+      <td class="left" style="max-width:150px;overflow:hidden;text-overflow:ellipsis">${r.produto}</td>
       <td>${r.un}</td>
       <td>${r.qtde}</td>
       <td>R$&nbsp;${(+r.precoNF).toFixed(4)}</td>
@@ -770,6 +783,10 @@ function renderMatriz() {
       <td class="td-st">${stTag}</td>
       <td class="td-st">${r.temST ? 'R$&nbsp;'+(+r.stPorUnidade).toFixed(4) : '—'}</td>
       <td><b>R$&nbsp;${(+r.custoUnit).toFixed(4)}</b></td>
+      <td class="td-desm"><input class="ef" style="border-color:#388e3c" value="${unEmbal}"
+          onchange="atualizarUnEmbal(${i},this.value)" title="Unidades por embalagem"></td>
+      <td class="td-desm"><b>${totalUnid}</b> un</td>
+      <td class="td-desm">R$&nbsp;${custoUnid.toFixed(4)}</td>
       <td><input class="ef" value="${r.reajuste||0}"
           onchange="atualizarReajuste(${i},this.value)">%</td>
       <td>R$&nbsp;${novo.toFixed(4)}</td>
@@ -779,9 +796,17 @@ function renderMatriz() {
       <td><span class="${varVal>0?'tag-alerta':'tag-ok'}">${varVal>0?'⚠️ Alta':'✅ OK'}</span></td>
       <td class="td-venda"><input class="ef ef-venda" value="${markup}"
           onchange="atualizarMarkup(${i},this.value)">%</td>
-      <td class="td-venda"><span class="preco-venda-val">R$&nbsp;${pVenda.toFixed(2)}</span></td>
+      <td class="td-venda"><span class="preco-venda-val">R$&nbsp;${pVendaEmb.toFixed(2)}</span></td>
+      <td class="td-venda"><span class="preco-venda-val" style="color:#4e342e">R$&nbsp;${pVendaUnid.toFixed(2)}</span></td>
     </tr>`;
   }).join('');
+}
+
+async function atualizarUnEmbal(i, val) {
+  matrizData[i].unEmbal = parseInt(val) || 1;
+  localStorage.setItem('ls_matriz', JSON.stringify(matrizData));
+  renderMatriz();
+  if (scriptURL) await salvarNoSheets();
 }
 
 async function atualizarReajuste(i, val) {
@@ -819,7 +844,11 @@ function renderFornecedores() {
   if (!matrizData.length) { grid.innerHTML='<div class="empty">Nenhum fornecedor ainda.</div>'; return; }
   const fornecs = {};
   matrizData.forEach(r => { if(!fornecs[r.fornecedor]) fornecs[r.fornecedor]=[]; fornecs[r.fornecedor].push(r); });
-  grid.innerHTML = Object.entries(fornecs).map(([nome,itens]) => {
+
+  // Guarda lista de nomes para referenciar por índice
+  window._fornecNomes = Object.keys(fornecs);
+
+  grid.innerHTML = Object.entries(fornecs).map(([nome,itens], idx) => {
     const ultData = itens[itens.length-1].dataNF;
     const alertas = itens.filter(i=>i.variacao>0).length;
     const comST   = itens.filter(i=>i.temST).length;
@@ -829,11 +858,17 @@ function renderFornecedores() {
       ${comST   ? `<div class="fornec-meta"><span class="tag-st" style="font-size:.7rem">🔶 ${comST} item(s) com ST</span></div>` : ''}
       ${alertas ? `<div class="fornec-meta" style="color:#c62828">⚠️ ${alertas} item(s) com reajuste</div>` : ''}
       <div class="fornec-actions">
-        <button class="btn btn-primary btn-sm" onclick="exportarFornecedor('${nome.replace(/'/g,"\\'")}')">📥 .xlsx</button>
+        <button class="btn btn-primary btn-sm" onclick="exportarFornecedorIdx(${idx})">📥 .xlsx</button>
         <button class="btn btn-warn btn-sm" onclick="switchTab('matriz')">👁️ Ver</button>
       </div>
     </div>`;
   }).join('');
+}
+
+function exportarFornecedorIdx(idx) {
+  const nome = window._fornecNomes && window._fornecNomes[idx];
+  if (!nome) return;
+  exportarFornecedor(nome);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -881,13 +916,20 @@ function renderAtivo() {
 function exportarMatriz() {
   if (!matrizData.length) { alert('Nenhum dado.'); return; }
   const wb = XLSX.utils.book_new();
-  const hdrs = ['Fornecedor','Produto','UN','Qtde/Embal.','Preço NF (R$)','IPI (%)','ST?','ICMS-ST Unit.(R$)','Custo Unit. Real (R$)','% Reajuste','Novo Preço Est. (R$)','Variação (R$)','Data NF','Nº NF','Status','% Markup','Preço de Venda (R$)'];
+  const hdrs = ['Fornecedor','Produto','UN','Qtde NF','Preço NF (R$)','IPI (%)','ST?','ICMS-ST Unit.(R$)','Custo Unit. Real (R$)','Un/Embal.','Total Unidades','Custo/Unid. (R$)','% Reajuste','Novo Preço Est. (R$)','Variação (R$)','Data NF','Nº NF','Status','% Markup','Venda/Embal. (R$)','Venda/Unid. (R$)'];
   const rows = matrizData.map(r => {
-    const base=r.novoPreco>0?r.novoPreco:r.custoUnit;
+    const base      = r.novoPreco>0 ? r.novoPreco : r.custoUnit;
+    const unEmbal   = r.unEmbal || 1;
+    const totalUnid = r.qtde * unEmbal;
+    const custoUnid = base / unEmbal;
+    const pVendaEmb = base * (1+(r.markup||0)/100);
+    const pVendaUnd = custoUnid * (1+(r.markup||0)/100);
     return [r.fornecedor,r.produto,r.un,r.qtde,r.precoNF,r.ipi,
-      r.temST?'🔶 ST':'✅ Normal',r.stPorUnidade||0,r.custoUnit,
-      r.reajuste,r.novoPreco,r.variacao,r.dataNF,r.nNF,r.status,
-      r.markup||0, base*(1+(r.markup||0)/100)];
+      r.temST?'🔶 ST':'✅ Normal', r.stPorUnidade||0, r.custoUnit,
+      unEmbal, totalUnid, custoUnid,
+      r.reajuste, r.novoPreco, r.variacao,
+      r.dataNF, r.nNF, r.status,
+      r.markup||0, pVendaEmb, pVendaUnd];
   });
   const ws = XLSX.utils.aoa_to_sheet([hdrs,...rows]);
   ws['!cols'] = [20,25,5,8,12,6,8,12,14,10,14,12,11,9,8,9,14].map(w=>({wch:w}));
