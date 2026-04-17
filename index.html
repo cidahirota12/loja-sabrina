@@ -164,6 +164,34 @@ input.ef-venda { border-color:#8D6E63; }
 /* ── EMPTY ── */
 .empty { text-align:center; padding:28px; color:#aaa; font-size:.85rem; }
 
+/* ── TOOLTIP PRODUTO ── */
+.prod-cell { cursor:pointer; position:relative; }
+.prod-cell:hover { color:var(--azul2); text-decoration:underline dotted; }
+
+/* ── MODAL PRODUTO ── */
+#modal-produto { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:2000; align-items:center; justify-content:center; padding:16px; }
+#modal-produto.open { display:flex; }
+#modal-produto .mprod { background:#fff; border-radius:12px; padding:24px; max-width:480px; width:100%; }
+#modal-produto .mprod h3 { font-family:'Syne',sans-serif; color:var(--azul); font-size:1rem; margin-bottom:8px; }
+#modal-produto .mprod p { font-size:.88rem; color:#444; line-height:1.5; word-break:break-word; }
+#modal-produto .mprod button { margin-top:14px; }
+
+/* ── MODAL COLUNAS ── */
+#modal-colunas { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:2000; align-items:center; justify-content:center; padding:16px; }
+#modal-colunas.open { display:flex; }
+#modal-colunas .mcol { background:#fff; border-radius:12px; padding:24px; max-width:420px; width:100%; max-height:85vh; overflow-y:auto; }
+#modal-colunas .mcol h3 { font-family:'Syne',sans-serif; color:var(--azul); font-size:.95rem; margin-bottom:12px; }
+.col-item { display:flex; align-items:center; gap:10px; padding:8px 10px; border:1.5px solid var(--borda); border-radius:7px; margin-bottom:6px; background:#fff; cursor:grab; user-select:none; font-size:.82rem; }
+.col-item:active { cursor:grabbing; background:#fffbe6; border-color:var(--neon2); }
+.col-item.dragging { opacity:.4; }
+.col-item.drag-over-col { border-color:var(--azul2); background:var(--azul-cl); }
+.col-drag-handle { color:#aaa; font-size:1rem; }
+.col-item input[type=checkbox] { accent-color:var(--azul2); width:14px; height:14px; }
+
+/* ── BTN DELETE LINHA ── */
+.btn-del-row { background:none; border:none; color:#e53935; cursor:pointer; font-size:.9rem; padding:2px 5px; border-radius:4px; transition:background .15s; }
+.btn-del-row:hover { background:#fce4ec; }
+
 /* ── LANDSCAPE HINT ── */
 .landscape-hint { display:none; background:var(--neon2); color:var(--azul); text-align:center; padding:6px; font-size:.75rem; font-weight:600; }
 @media (max-width:768px) and (orientation:portrait) {
@@ -236,6 +264,7 @@ input.ef-venda { border-color:#8D6E63; }
       <div class="card-title" style="margin:0;">Planilha Matriz — Todos os Fornecedores</div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;">
         <button class="btn btn-primary btn-sm" onclick="carregarDoSheets()">🔄 Atualizar</button>
+        <button class="btn btn-warn btn-sm" onclick="abrirModalColunas()">⚙️ Colunas</button>
         <button class="btn btn-success btn-sm" onclick="exportarMatriz()">📥 Baixar .xlsx</button>
         <button class="btn btn-danger btn-sm" onclick="limparMatriz()">🗑️ Limpar</button>
       </div>
@@ -246,35 +275,10 @@ input.ef-venda { border-color:#8D6E63; }
       Colunas em <span style="color:var(--marrom-h);font-weight:700">marrom</span> = Preço de Venda.
     </div>
     <div class="table-outer">
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Fornecedor</th>
-            <th>Produto</th>
-            <th>UN</th>
-            <th>Qtde/<br>Embal.</th>
-            <th>Preço NF<br>(R$)</th>
-            <th>IPI<br>(%)</th>
-            <th class="th-st">ST?</th>
-            <th class="th-st">ICMS-ST<br>Unit.(R$)</th>
-            <th>Custo Unit.<br>Real (R$)</th>
-            <th class="th-desm">Un/<br>Embal.</th>
-            <th class="th-desm">Total<br>Unidades</th>
-            <th class="th-desm">Custo/<br>Unid. (R$)</th>
-            <th>% Reajuste<br>Fornec.</th>
-            <th>Novo Preço<br>Est. (R$)</th>
-            <th>Variação<br>(R$)</th>
-            <th>Data NF</th>
-            <th>Nº NF</th>
-            <th>Status</th>
-            <th class="th-venda">% Markup</th>
-            <th class="th-venda">Venda/<br>Embal. (R$)</th>
-            <th class="th-venda">Venda/<br>Unid. (R$)</th>
-          </tr>
-        </thead>
+      <table id="tabela-matriz">
+        <thead><tr></tr></thead>
         <tbody id="matriz-body">
-          <tr><td colspan="21" class="empty">Nenhum dado. Importe um XML ou clique em Atualizar.</td></tr>
+          <tr><td colspan="23" class="empty">Nenhum dado. Importe um XML ou clique em Atualizar.</td></tr>
         </tbody>
       </table>
     </div>
@@ -299,6 +303,29 @@ input.ef-venda { border-color:#8D6E63; }
   </div>
 
 </main>
+
+<!-- MODAL PRODUTO COMPLETO -->
+<div id="modal-produto">
+  <div class="mprod">
+    <h3>📦 Descrição completa do produto</h3>
+    <p id="modal-produto-texto"></p>
+    <button class="btn btn-primary btn-sm" onclick="document.getElementById('modal-produto').classList.remove('open')">Fechar</button>
+  </div>
+</div>
+
+<!-- MODAL ORGANIZAR COLUNAS -->
+<div id="modal-colunas">
+  <div class="mcol">
+    <h3>⚙️ Organizar e ocultar colunas</h3>
+    <p style="font-size:.76rem;color:#666;margin-bottom:12px;">Arraste para reordenar. Desmarque para ocultar.</p>
+    <div id="col-lista"></div>
+    <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
+      <button class="btn btn-success btn-sm" onclick="aplicarColunas()">✅ Aplicar</button>
+      <button class="btn btn-warn btn-sm" onclick="resetarColunas()">↩️ Resetar</button>
+      <button class="btn btn-primary btn-sm" onclick="document.getElementById('modal-colunas').classList.remove('open')">Fechar</button>
+    </div>
+  </div>
+</div>
 
 <!-- MODAL CONFIG -->
 <div class="modal-bg" id="modal-config">
@@ -430,6 +457,46 @@ let historicoLog = JSON.parse(localStorage.getItem('ls_historico') || '[]');
 let scriptURL    = localStorage.getItem('ls_script_url') || '';
 let pendingItems = [];
 let syncAtivo    = false;
+
+// ═══════════════════════════════════════════════════════════
+// DEFINIÇÃO DE COLUNAS (ordem e visibilidade)
+// ═══════════════════════════════════════════════════════════
+const COLUNAS_DEFAULT = [
+  { id:'del',      label:'',                 cls:'',         fixo:true  },
+  { id:'num',      label:'#',                cls:'',         fixo:true  },
+  { id:'fornec',   label:'Fornecedor',        cls:'left',     fixo:false },
+  { id:'produto',  label:'Produto',           cls:'left',     fixo:false },
+  { id:'un',       label:'UN',               cls:'',         fixo:false },
+  { id:'qtde',     label:'Qtde/Embal.',       cls:'',         fixo:false },
+  { id:'precoNF',  label:'Preço NF (R$)',     cls:'',         fixo:false },
+  { id:'ipi',      label:'IPI (%)',           cls:'',         fixo:false },
+  { id:'st',       label:'ST?',              cls:'td-st',    fixo:false },
+  { id:'stUnit',   label:'ICMS-ST Unit.',     cls:'td-st',    fixo:false },
+  { id:'custo',    label:'Custo Unit. Real',  cls:'',         fixo:false },
+  { id:'unEmbal',  label:'Un/Embal.',         cls:'td-desm',  fixo:false },
+  { id:'totUnid',  label:'Total Unid.',       cls:'td-desm',  fixo:false },
+  { id:'cUnid',    label:'Custo/Unid.',       cls:'td-desm',  fixo:false },
+  { id:'reajuste', label:'% Reajuste',        cls:'',         fixo:false },
+  { id:'novoPreco',label:'Novo Preço Est.',   cls:'',         fixo:false },
+  { id:'variacao', label:'Variação (R$)',     cls:'',         fixo:false },
+  { id:'dataNF',   label:'Data NF',           cls:'',         fixo:false },
+  { id:'nNF',      label:'Nº NF',             cls:'',         fixo:false },
+  { id:'status',   label:'Status',            cls:'',         fixo:false },
+  { id:'markup',   label:'% Markup',          cls:'td-venda', fixo:false },
+  { id:'vEmbal',   label:'Venda/Embal.',      cls:'td-venda', fixo:false },
+  { id:'vUnid',    label:'Venda/Unid.',       cls:'td-venda', fixo:false },
+];
+
+let colState = JSON.parse(localStorage.getItem('ls_colunas') || 'null');
+if (!colState) colState = COLUNAS_DEFAULT.map(c => ({ id:c.id, visivel:true }));
+
+function getColOrder() {
+  // retorna colunas na ordem salva, mesclando com defaults
+  return colState.map(cs => {
+    const def = COLUNAS_DEFAULT.find(c => c.id === cs.id);
+    return def ? { ...def, visivel: cs.visivel } : null;
+  }).filter(Boolean);
+}
 
 // ═══════════════════════════════════════════════════════════
 // INIT
@@ -749,57 +816,149 @@ async function salvarNaMatriz() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// RENDER MATRIZ
+// RENDER MATRIZ — colunas dinâmicas
 // ═══════════════════════════════════════════════════════════
 function renderMatriz() {
   const tbody = document.getElementById('matriz-body');
+  const cols  = getColOrder().filter(c => c.visivel);
+
+  // Rebuild thead
+  const thead = document.querySelector('#tabela-matriz thead tr');
+  if (thead) {
+    thead.innerHTML = cols.map(c => {
+      const thCls = c.id==='st'||c.id==='stUnit' ? 'th-st'
+                  : (c.id==='markup'||c.id==='vEmbal'||c.id==='vUnid') ? 'th-venda'
+                  : (c.id==='unEmbal'||c.id==='totUnid'||c.id==='cUnid') ? 'th-desm'
+                  : '';
+      return `<th class="${thCls}">${c.label}</th>`;
+    }).join('');
+  }
+
   if (!matrizData.length) {
-    tbody.innerHTML = '<tr><td colspan="21" class="empty">Nenhum dado. Importe um XML ou clique em Atualizar.</td></tr>';
+    tbody.innerHTML = `<tr><td colspan="${cols.length}" class="empty">Nenhum dado. Importe um XML ou clique em Atualizar.</td></tr>`;
     return;
   }
-  tbody.innerHTML = matrizData.map((r,i) => {
-    const novo      = r.custoUnit * (1 + (r.reajuste||0)/100);
-    const varVal    = novo - r.custoUnit;
-    const varCls    = varVal > 0 ? 'color:#c62828;font-weight:700' : varVal < 0 ? 'color:#2e7d32;font-weight:700' : '';
-    const markup    = r.markup || 0;
-    const base      = novo > 0 ? novo : r.custoUnit;
-    const pVendaEmb = base * (1 + markup/100);
-    // desmembramento
-    const unEmbal   = r.unEmbal || 1;
-    const totalUnid = r.qtde * unEmbal;
-    const custoUnid = unEmbal > 1 ? base / unEmbal : base;
+
+  tbody.innerHTML = matrizData.map((r, i) => {
+    const novo       = r.custoUnit * (1 + (r.reajuste||0)/100);
+    const varVal     = novo - r.custoUnit;
+    const varCls     = varVal > 0 ? 'color:#c62828;font-weight:700' : varVal < 0 ? 'color:#2e7d32;font-weight:700' : '';
+    const markup     = r.markup || 0;
+    const base       = novo > 0 ? novo : r.custoUnit;
+    const pVendaEmb  = base * (1 + markup/100);
+    const unEmbal    = r.unEmbal || 1;
+    const totalUnid  = r.qtde * unEmbal;
+    const custoUnid  = unEmbal > 1 ? base / unEmbal : base;
     const pVendaUnid = custoUnid * (1 + markup/100);
-    const stTag     = r.temST
-      ? `<span class="tag-st">🔶 ST</span>`
-      : `<span class="tag-normal">✅</span>`;
-    return `<tr>
-      <td>${i+1}</td>
-      <td class="left" style="max-width:130px;overflow:hidden;text-overflow:ellipsis">${r.fornecedor}</td>
-      <td class="left" style="max-width:150px;overflow:hidden;text-overflow:ellipsis">${r.produto}</td>
-      <td>${r.un}</td>
-      <td>${r.qtde}</td>
-      <td>R$&nbsp;${(+r.precoNF).toFixed(4)}</td>
-      <td>${(+r.ipi).toFixed(1)}%</td>
-      <td class="td-st">${stTag}</td>
-      <td class="td-st">${r.temST ? 'R$&nbsp;'+(+r.stPorUnidade).toFixed(4) : '—'}</td>
-      <td><b>R$&nbsp;${(+r.custoUnit).toFixed(4)}</b></td>
-      <td class="td-desm"><input class="ef" style="border-color:#388e3c" value="${unEmbal}"
-          onchange="atualizarUnEmbal(${i},this.value)" title="Unidades por embalagem"></td>
-      <td class="td-desm"><b>${totalUnid}</b> un</td>
-      <td class="td-desm">R$&nbsp;${custoUnid.toFixed(4)}</td>
-      <td><input class="ef" value="${r.reajuste||0}"
-          onchange="atualizarReajuste(${i},this.value)">%</td>
-      <td>R$&nbsp;${novo.toFixed(4)}</td>
-      <td style="${varCls}">${varVal>=0?'+':''}R$&nbsp;${varVal.toFixed(4)}</td>
-      <td>${r.dataNF}</td>
-      <td>${r.nNF}</td>
-      <td><span class="${varVal>0?'tag-alerta':'tag-ok'}">${varVal>0?'⚠️ Alta':'✅ OK'}</span></td>
-      <td class="td-venda"><input class="ef ef-venda" value="${markup}"
-          onchange="atualizarMarkup(${i},this.value)">%</td>
-      <td class="td-venda"><span class="preco-venda-val">R$&nbsp;${pVendaEmb.toFixed(2)}</span></td>
-      <td class="td-venda"><span class="preco-venda-val" style="color:#4e342e">R$&nbsp;${pVendaUnid.toFixed(2)}</span></td>
-    </tr>`;
+    const stTag      = r.temST ? `<span class="tag-st">🔶 ST</span>` : `<span class="tag-normal">✅</span>`;
+
+    const cellMap = {
+      del:      `<td><button class="btn-del-row" onclick="deletarLinha(${i})" title="Deletar esta linha">🗑️</button></td>`,
+      num:      `<td>${i+1}</td>`,
+      fornec:   `<td class="left" style="max-width:130px;overflow:hidden;text-overflow:ellipsis" title="${r.fornecedor}">${r.fornecedor}</td>`,
+      produto:  `<td class="left prod-cell" style="max-width:150px;overflow:hidden;text-overflow:ellipsis" onclick="abrirModalProduto('${r.produto.replace(/'/g,"\\'")}')" title="Clique para ver descrição completa">${r.produto}</td>`,
+      un:       `<td>${r.un}</td>`,
+      qtde:     `<td>${r.qtde}</td>`,
+      precoNF:  `<td>R$&nbsp;${(+r.precoNF).toFixed(4)}</td>`,
+      ipi:      `<td>${(+r.ipi).toFixed(1)}%</td>`,
+      st:       `<td class="td-st">${stTag}</td>`,
+      stUnit:   `<td class="td-st">${r.temST ? 'R$&nbsp;'+(+r.stPorUnidade).toFixed(4) : '—'}</td>`,
+      custo:    `<td><b>R$&nbsp;${(+r.custoUnit).toFixed(4)}</b></td>`,
+      unEmbal:  `<td class="td-desm"><input class="ef" style="border-color:#388e3c" value="${unEmbal}" onchange="atualizarUnEmbal(${i},this.value)" title="Unidades por embalagem"></td>`,
+      totUnid:  `<td class="td-desm"><b>${totalUnid}</b> un</td>`,
+      cUnid:    `<td class="td-desm">R$&nbsp;${custoUnid.toFixed(4)}</td>`,
+      reajuste: `<td><input class="ef" value="${r.reajuste||0}" onchange="atualizarReajuste(${i},this.value)">%</td>`,
+      novoPreco:`<td>R$&nbsp;${novo.toFixed(4)}</td>`,
+      variacao: `<td style="${varCls}">${varVal>=0?'+':''}R$&nbsp;${varVal.toFixed(4)}</td>`,
+      dataNF:   `<td>${r.dataNF}</td>`,
+      nNF:      `<td>${r.nNF}</td>`,
+      status:   `<td><span class="${varVal>0?'tag-alerta':'tag-ok'}">${varVal>0?'⚠️ Alta':'✅ OK'}</span></td>`,
+      markup:   `<td class="td-venda"><input class="ef ef-venda" value="${markup}" onchange="atualizarMarkup(${i},this.value)">%</td>`,
+      vEmbal:   `<td class="td-venda"><span class="preco-venda-val">R$&nbsp;${pVendaEmb.toFixed(2)}</span></td>`,
+      vUnid:    `<td class="td-venda"><span class="preco-venda-val" style="color:#4e342e">R$&nbsp;${pVendaUnid.toFixed(2)}</span></td>`,
+    };
+
+    return `<tr>${cols.map(c => cellMap[c.id] || '<td></td>').join('')}</tr>`;
   }).join('');
+}
+
+// ── Modal produto completo ──
+function abrirModalProduto(nome) {
+  document.getElementById('modal-produto-texto').textContent = nome;
+  document.getElementById('modal-produto').classList.add('open');
+}
+document.getElementById('modal-produto').addEventListener('click', e => {
+  if (e.target === e.currentTarget) e.currentTarget.classList.remove('open');
+});
+
+// ── Deletar linha individual ──
+async function deletarLinha(i) {
+  const r = matrizData[i];
+  if (!confirm(`Deletar "${r.produto}" (NF ${r.nNF || '—'}) do fornecedor "${r.fornecedor}"?`)) return;
+  matrizData.splice(i, 1);
+  localStorage.setItem('ls_matriz', JSON.stringify(matrizData));
+  atualizarStats();
+  renderMatriz();
+  if (scriptURL) await salvarNoSheets();
+}
+
+// ── Modal organizar colunas ──
+function abrirModalColunas() {
+  const lista  = document.getElementById('col-lista');
+  const cols   = getColOrder();
+  lista.innerHTML = cols.filter(c => !c.fixo || c.id==='num').map((c,i) => `
+    <div class="col-item" draggable="true" data-id="${c.id}"
+         ondragstart="colDragStart(event)"
+         ondragover="colDragOver(event)"
+         ondrop="colDrop(event)"
+         ondragleave="colDragLeave(event)">
+      <span class="col-drag-handle">☰</span>
+      <input type="checkbox" ${c.visivel?'checked':''} onchange="colToggle('${c.id}',this.checked)">
+      <span>${c.label || c.id}</span>
+    </div>`).join('');
+  document.getElementById('modal-colunas').classList.add('open');
+}
+document.getElementById('modal-colunas').addEventListener('click', e => {
+  if (e.target === e.currentTarget) e.currentTarget.classList.remove('open');
+});
+
+let dragSrcId = null;
+function colDragStart(e) { dragSrcId = e.currentTarget.dataset.id; e.currentTarget.classList.add('dragging'); }
+function colDragOver(e)  { e.preventDefault(); e.currentTarget.classList.add('drag-over-col'); }
+function colDragLeave(e) { e.currentTarget.classList.remove('drag-over-col'); }
+function colDrop(e) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over-col');
+  const targetId = e.currentTarget.dataset.id;
+  if (!dragSrcId || dragSrcId === targetId) return;
+  const si = colState.findIndex(c=>c.id===dragSrcId);
+  const ti = colState.findIndex(c=>c.id===targetId);
+  if (si<0||ti<0) return;
+  const [moved] = colState.splice(si,1);
+  colState.splice(ti,0,moved);
+  abrirModalColunas();
+}
+function colToggle(id, vis) {
+  const c = colState.find(c=>c.id===id);
+  if (c) c.visivel = vis;
+}
+function aplicarColunas() {
+  // lê checkboxes atuais do modal
+  document.querySelectorAll('#col-lista .col-item').forEach(el => {
+    const id  = el.dataset.id;
+    const vis = el.querySelector('input[type=checkbox]').checked;
+    const c   = colState.find(c=>c.id===id);
+    if (c) c.visivel = vis;
+  });
+  localStorage.setItem('ls_colunas', JSON.stringify(colState));
+  document.getElementById('modal-colunas').classList.remove('open');
+  renderMatriz();
+}
+function resetarColunas() {
+  colState = COLUNAS_DEFAULT.map(c => ({ id:c.id, visivel:true }));
+  localStorage.removeItem('ls_colunas');
+  document.getElementById('modal-colunas').classList.remove('open');
+  renderMatriz();
 }
 
 async function atualizarUnEmbal(i, val) {
@@ -1008,4 +1167,3 @@ function exportarHistorico() {
 </script>
 </body>
 </html>
-
