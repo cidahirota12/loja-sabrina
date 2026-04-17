@@ -188,11 +188,26 @@ input.ef-venda { border-color:#8D6E63; }
 .col-drag-handle { color:#aaa; font-size:1rem; }
 .col-item input[type=checkbox] { accent-color:var(--azul2); width:14px; height:14px; }
 
+/* ── COLUNA PRODUTO REDIMENSIONÁVEL ── */
+.prod-col-wrap { display:inline-flex; align-items:center; gap:0; width:100%; }
+.prod-col-wrap span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; min-width:60px; }
+.col-resizer {
+  width:6px; min-width:6px; height:18px;
+  cursor:col-resize;
+  background:linear-gradient(to bottom, transparent 20%, #aaa 20%, #aaa 40%, transparent 40%, transparent 60%, #aaa 60%, #aaa 80%, transparent 80%);
+  border-radius:2px;
+  opacity:.5;
+  flex-shrink:0;
+}
+.col-resizer:hover { opacity:1; background:linear-gradient(to bottom, transparent 20%, var(--azul2) 20%, var(--azul2) 40%, transparent 40%, transparent 60%, var(--azul2) 60%, var(--azul2) 80%, transparent 80%); }
+
+/* ── ARRASTAR TABELA COM MOUSE ── */
+.table-outer { cursor:grab; }
+.table-outer.grabbing { cursor:grabbing; user-select:none; }
+
 /* ── BTN DELETE LINHA ── */
 .btn-del-row { background:none; border:none; color:#e53935; cursor:pointer; font-size:.9rem; padding:2px 5px; border-radius:4px; transition:background .15s; }
 .btn-del-row:hover { background:#fce4ec; }
-
-/* ── LANDSCAPE HINT ── */
 .landscape-hint { display:none; background:var(--neon2); color:var(--azul); text-align:center; padding:6px; font-size:.75rem; font-weight:600; }
 @media (max-width:768px) and (orientation:portrait) {
   .landscape-hint { display:block; }
@@ -856,7 +871,12 @@ function renderMatriz() {
       del:      `<td><button class="btn-del-row" onclick="deletarLinha(${i})" title="Deletar esta linha">🗑️</button></td>`,
       num:      `<td>${i+1}</td>`,
       fornec:   `<td class="left" style="max-width:130px;overflow:hidden;text-overflow:ellipsis" title="${r.fornecedor}">${r.fornecedor}</td>`,
-      produto:  `<td class="left prod-cell" style="max-width:150px;overflow:hidden;text-overflow:ellipsis" onclick="abrirModalProduto('${r.produto.replace(/'/g,"\\'")}')" title="Clique para ver descrição completa">${r.produto}</td>`,
+      produto:  `<td class="left prod-cell" id="prod-col-${i}" style="width:var(--prod-col-w,150px);max-width:300px;min-width:60px;overflow:hidden;">
+                  <div class="prod-col-wrap">
+                    <span onclick="abrirModalProduto('${r.produto.replace(/'/g,"\\'").replace(/\\/g,'\\\\')}')" title="Clique para ver nome completo">${r.produto}</span>
+                    <span class="col-resizer" onmousedown="iniciarResizeColProduto(event)"></span>
+                  </div>
+                </td>`,
       un:       `<td>${r.un}</td>`,
       qtde:     `<td>${r.qtde}</td>`,
       precoNF:  `<td>R$&nbsp;${(+r.precoNF).toFixed(4)}</td>`,
@@ -890,6 +910,66 @@ function abrirModalProduto(nome) {
 document.getElementById('modal-produto').addEventListener('click', e => {
   if (e.target === e.currentTarget) e.currentTarget.classList.remove('open');
 });
+
+// ── Resize coluna Produto ──
+let _resizeStartX = 0, _resizeStartW = 0;
+function iniciarResizeColProduto(e) {
+  e.preventDefault(); e.stopPropagation();
+  _resizeStartX = e.clientX;
+  const td = e.target.closest('td');
+  _resizeStartW = td ? td.offsetWidth : 150;
+  document.addEventListener('mousemove', _onResizeMove);
+  document.addEventListener('mouseup',   _onResizeUp);
+}
+function _onResizeMove(e) {
+  const diff = e.clientX - _resizeStartX;
+  const newW = Math.max(60, Math.min(400, _resizeStartW + diff));
+  document.documentElement.style.setProperty('--prod-col-w', newW + 'px');
+  // aplica a todas as colunas produto visíveis
+  document.querySelectorAll('[id^="prod-col-"]').forEach(td => {
+    td.style.width = newW + 'px';
+  });
+}
+function _onResizeUp() {
+  document.removeEventListener('mousemove', _onResizeMove);
+  document.removeEventListener('mouseup',   _onResizeUp);
+}
+
+// ── Arrastar tabela com mouse ──
+(function() {
+  const outer = document.querySelector('.table-outer');
+  if (!outer) return;
+  let isDragging = false, startX = 0, scrollLeft = 0;
+  outer.addEventListener('mousedown', e => {
+    // não inicia drag em inputs, botões ou resizer
+    if (e.target.closest('input,button,.btn-del-row,.col-resizer,.prod-cell span')) return;
+    isDragging  = true;
+    startX      = e.pageX - outer.offsetLeft;
+    scrollLeft  = outer.scrollLeft;
+    outer.classList.add('grabbing');
+  });
+  document.addEventListener('mouseup', () => {
+    isDragging = false;
+    outer.classList.remove('grabbing');
+  });
+  outer.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x    = e.pageX - outer.offsetLeft;
+    const walk = (x - startX) * 1.2;
+    outer.scrollLeft = scrollLeft - walk;
+  });
+  // Touch support
+  let touchStartX = 0, touchScrollLeft = 0;
+  outer.addEventListener('touchstart', e => {
+    touchStartX    = e.touches[0].pageX;
+    touchScrollLeft = outer.scrollLeft;
+  }, { passive:true });
+  outer.addEventListener('touchmove', e => {
+    const dx = touchStartX - e.touches[0].pageX;
+    outer.scrollLeft = touchScrollLeft + dx;
+  }, { passive:true });
+})();
 
 // ── Deletar linha individual ──
 async function deletarLinha(i) {
@@ -1001,14 +1081,23 @@ async function limparMatriz() {
 function renderFornecedores() {
   const grid = document.getElementById('fornec-grid');
   if (!matrizData.length) { grid.innerHTML='<div class="empty">Nenhum fornecedor ainda.</div>'; return; }
+
+  // Agrupa itens por fornecedor com cópia profunda para evitar contaminação
   const fornecs = {};
-  matrizData.forEach(r => { if(!fornecs[r.fornecedor]) fornecs[r.fornecedor]=[]; fornecs[r.fornecedor].push(r); });
+  matrizData.forEach((r,idx) => {
+    const key = r.fornecedor;
+    if (!fornecs[key]) fornecs[key] = [];
+    fornecs[key].push({ ...r, _matrizIdx: idx }); // cópia com índice original
+  });
 
-  // Guarda lista de nomes e itens para referenciar por índice
-  window._fornecNomes = Object.keys(fornecs);
-  window._fornecItens = Object.values(fornecs);
+  // Snapshot imutável indexado — evita referências cruzadas entre fornecedores
+  window._fornecSnapshot = Object.entries(fornecs).map(([nome, itens]) => ({
+    nome,
+    itens: itens.map(i => ({ ...i })) // cópia independente
+  }));
 
-  grid.innerHTML = Object.entries(fornecs).map(([nome,itens], idx) => {
+  grid.innerHTML = window._fornecSnapshot.map((f, idx) => {
+    const { nome, itens } = f;
     const ultData = itens[itens.length-1].dataNF;
     const alertas = itens.filter(i=>i.variacao>0).length;
     const comST   = itens.filter(i=>i.temST).length;
@@ -1026,10 +1115,8 @@ function renderFornecedores() {
 }
 
 function exportarFornecedorIdx(idx) {
-  if (!window._fornecNomes || !window._fornecNomes[idx]) return;
-  const nome  = window._fornecNomes[idx];
-  const itens = window._fornecItens && window._fornecItens[idx];
-  if (!itens || !itens.length) return;
+  if (!window._fornecSnapshot || !window._fornecSnapshot[idx]) return;
+  const { nome, itens } = window._fornecSnapshot[idx];
   exportarFornecedor(nome, itens);
 }
 
@@ -1167,3 +1254,4 @@ function exportarHistorico() {
 </script>
 </body>
 </html>
+
