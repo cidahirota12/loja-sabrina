@@ -49,8 +49,8 @@ header h1 { font-family:'Syne',sans-serif; color:#fff; font-size:1rem; font-weig
 .sync-ok   { background:#e8f5e9; color:#2e7d32; }
 .sync-warn { background:#fff3e0; color:#e65100; }
 .sync-off  { background:#fce4ec; color:#c62828; }
-#btn-config-header { background:rgba(255,255,255,.15); color:#fff; border:1px solid rgba(255,255,255,.3); border-radius:6px; padding:5px 12px; font-size:.78rem; cursor:pointer; font-family:'Syne',sans-serif; font-weight:600; }
-#btn-config-header:hover { background:rgba(255,255,255,.25); }
+.btn-header { background:rgba(255,255,255,.15); color:#fff; border:1px solid rgba(255,255,255,.3); border-radius:6px; padding:5px 12px; font-size:.78rem; cursor:pointer; font-family:'Syne',sans-serif; font-weight:600; }
+.btn-header:hover { background:rgba(255,255,255,.25); }
 
 /* ── TABS ── */
 .tabs { display:flex; gap:0; padding:0 20px; background:var(--azul); overflow-x:auto; }
@@ -88,8 +88,10 @@ main { padding:16px 12px 60px; max-width:100%; }
 .btn-warn { background:var(--neon2); color:var(--azul); }
 .btn-warn:hover { filter:brightness(1.05); }
 .btn-danger { background:#e53935; color:#fff; }
+.btn-ghost { background:var(--cinza); color:var(--azul); border:1.5px solid var(--borda); }
 .btn-sm { padding:6px 12px; font-size:.74rem; }
 .btn-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
+.btn:focus-visible, input:focus-visible, select:focus-visible { outline:3px solid var(--neon2); outline-offset:1px; }
 
 /* ── ALERTS ── */
 .alert { border-radius:8px; padding:10px 14px; font-size:.82rem; margin-bottom:12px; display:flex; align-items:flex-start; gap:8px; }
@@ -98,7 +100,31 @@ main { padding:16px 12px 60px; max-width:100%; }
 .alert-warn    { background:#fff8e1; color:#e65100; border-left:4px solid #e65100; }
 .alert-danger  { background:#fce4ec; color:#c62828; border-left:4px solid #c62828; }
 
-/* ── TABELA LANDSCAPE ── */
+/* ── ENTRADA POR CHAVE ── */
+.chave-box { background:var(--cinza); border:1.5px solid var(--borda); border-radius:10px; padding:14px; margin-top:14px; }
+.chave-box label { display:block; font-size:.8rem; font-weight:600; color:var(--azul2); margin-bottom:5px; }
+.chave-input { width:100%; border:1.5px solid var(--borda); border-radius:7px; padding:9px 12px; font-family:monospace; font-size:.86rem; letter-spacing:.5px; }
+.chave-input:focus { outline:2px solid var(--azul2); border-color:var(--azul2); }
+.chave-conta { font-size:.72rem; color:#777; margin-top:4px; }
+.pend-item { display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:9px 12px; border-radius:8px; background:#fff8e1; border-left:4px solid var(--neon2); margin-bottom:6px; font-size:.8rem; }
+.pend-chave { font-family:monospace; font-size:.68rem; color:#8a6d3b; word-break:break-all; }
+textarea.xml-paste { width:100%; min-height:90px; border:1.5px solid var(--borda); border-radius:7px; padding:9px 12px; font-family:monospace; font-size:.75rem; resize:vertical; }
+
+/* ── FILTROS ── */
+.filtros { display:flex; gap:8px; flex-wrap:wrap; align-items:center; background:var(--cinza); border:1.5px solid var(--borda); border-radius:10px; padding:10px 12px; margin-bottom:12px; }
+.filtros input, .filtros select { border:1.5px solid var(--borda); border-radius:7px; padding:7px 10px; font-size:.8rem; font-family:'DM Sans',sans-serif; background:#fff; }
+.filtros input[type=text] { min-width:170px; flex:1; }
+.filtros label { font-size:.72rem; font-weight:600; color:var(--azul2); }
+.filtro-ativo { background:var(--neon2); color:var(--azul); border-radius:20px; padding:3px 10px; font-size:.72rem; font-weight:700; }
+
+/* ── BARRA ALFABETO ── */
+.alfabeto { display:flex; flex-wrap:wrap; gap:3px; margin-bottom:10px; }
+.alfa-btn { border:1.5px solid var(--borda); background:#fff; color:var(--azul); border-radius:6px; min-width:26px; padding:4px 6px; font-size:.74rem; font-weight:700; cursor:pointer; font-family:'Syne',sans-serif; }
+.alfa-btn:hover { background:var(--azul-cl); }
+.alfa-btn.active { background:var(--azul); color:var(--neon); border-color:var(--azul); }
+.alfa-btn.vazia { opacity:.32; cursor:default; }
+
+/* ── TABELA ── */
 .table-outer {
   width:100%;
   overflow-x:auto;
@@ -107,16 +133,17 @@ main { padding:16px 12px 60px; max-width:100%; }
   border:1px solid var(--borda);
   position:relative;
 }
-table { border-collapse:collapse; font-size:.76rem; min-width:1200px; width:100%; }
+table { border-collapse:collapse; font-size:.76rem; width:100%; table-layout:fixed; }
+#tabela-matriz { min-width:100%; }
 thead tr { background:var(--azul); }
-thead th { color:var(--neon); font-family:'Syne',sans-serif; font-weight:700; font-size:.68rem; text-transform:uppercase; letter-spacing:.4px; padding:9px 8px; text-align:center; white-space:nowrap; border-right:1px solid rgba(255,255,255,.1); }
+thead th { color:var(--neon); font-family:'Syne',sans-serif; font-weight:700; font-size:.68rem; text-transform:uppercase; letter-spacing:.4px; padding:9px 6px; text-align:center; white-space:nowrap; border-right:1px solid rgba(255,255,255,.1); position:relative; overflow:hidden; text-overflow:ellipsis; }
 thead th.th-venda { background:var(--marrom-h); color:var(--neon2); }
 thead th.th-st { background:#4a148c; color:#e040fb; }
-thead th.th-frozen { position:sticky; left:0; z-index:3; background:var(--azul); box-shadow:2px 0 6px rgba(0,0,0,.18); }
+thead th.th-desm { background:#1B5E20; color:#c5e1a5; }
 tbody tr:nth-child(even) { background:var(--azul-cl); }
 tbody tr:nth-child(odd)  { background:#fff; }
 tbody tr:hover { background:#fffbe6; }
-tbody td { padding:7px 8px; text-align:center; border-bottom:1px solid var(--borda); border-right:1px solid #e8eef5; white-space:nowrap; }
+tbody td { padding:7px 6px; text-align:center; border-bottom:1px solid var(--borda); border-right:1px solid #e8eef5; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 tbody td.left { text-align:left; }
 tbody td.td-venda { background:#FFF8E1; }
 tbody td.td-st { background:#f3e5f5; }
@@ -124,43 +151,55 @@ tbody td.td-desm { background:#f1f8e9; }
 tbody tr:hover td.td-venda { background:#fff3cd; }
 tbody tr:hover td.td-st { background:#ede7f6; }
 tbody tr:hover td.td-desm { background:#dcedc8; }
-/* Coluna produto congelada */
-td.td-frozen, th.th-frozen {
-  position:sticky;
-  left:0;
-  z-index:2;
-  background:#fff;
-  box-shadow:2px 0 6px rgba(0,0,0,.10);
-}
-thead th.th-frozen { background:var(--azul); z-index:3; }
+tr.linha-nota td { background:var(--azul2) !important; color:#fff; font-family:'Syne',sans-serif; font-weight:700; text-align:left; font-size:.74rem; letter-spacing:.3px; }
+
+/* coluna congelada (a que estiver marcada) */
+td.td-frozen, th.th-frozen { position:sticky; z-index:2; box-shadow:2px 0 6px rgba(0,0,0,.10); }
+th.th-frozen { z-index:5; background:var(--azul); }
+tbody tr:nth-child(odd)  td.td-frozen { background:#fff; }
 tbody tr:nth-child(even) td.td-frozen { background:var(--azul-cl); }
 tbody tr:hover td.td-frozen { background:#fffbe6; }
+
+/* ── RESIZER / REORDENAR COLUNAS ── */
+.th-resizer { position:absolute; right:0; top:0; bottom:0; width:7px; cursor:col-resize; z-index:10; background:transparent; }
+.th-resizer:hover, .th-resizer.resizing { background:var(--neon2); opacity:.85; }
+thead th.arrastando { opacity:.45; }
+thead th.alvo-drop { box-shadow:inset 3px 0 0 var(--neon2); }
+.th-label { display:block; overflow:hidden; text-overflow:ellipsis; cursor:grab; }
+.th-label:active { cursor:grabbing; }
+.col-colapsada .th-label { visibility:hidden; }
 
 /* ── TAGS ── */
 .tag-ok     { background:#e8f5e9; color:#2e7d32; border-radius:4px; padding:2px 7px; font-size:.7rem; font-weight:600; }
 .tag-alerta { background:#fff3e0; color:#e65100; border-radius:4px; padding:2px 7px; font-size:.7rem; font-weight:600; }
 .tag-st     { background:#f3e5f5; color:#7b1fa2; border-radius:4px; padding:2px 7px; font-size:.7rem; font-weight:700; }
 .tag-normal { background:#e8f5e9; color:#2e7d32; border-radius:4px; padding:2px 7px; font-size:.7rem; }
+.tag-salva  { background:#e8f5e9; color:#2e7d32; border-radius:4px; padding:2px 6px; font-size:.66rem; font-weight:700; }
+.tag-sugerida { background:#fff3e0; color:#e65100; border-radius:4px; padding:2px 6px; font-size:.66rem; font-weight:700; }
 .preco-venda-val { font-weight:700; color:var(--marrom); font-size:.85rem; }
 
 /* ── EDIT FIELD ── */
-input.ef { border:1px solid var(--borda); border-radius:4px; padding:3px 5px; font-size:.76rem; width:62px; text-align:center; font-family:'DM Sans',sans-serif; background:#fff; }
+input.ef { border:1px solid var(--borda); border-radius:4px; padding:3px 4px; font-size:.76rem; width:100%; max-width:64px; text-align:center; font-family:'DM Sans',sans-serif; background:#fff; }
 input.ef:focus { outline:2px solid var(--azul2); border-color:var(--azul2); }
 input.ef-venda { border-color:#8D6E63; }
+input.ef-estr  { border-color:#388e3c; background:#f1f8e9; }
 
 /* ── FORNECEDOR CARDS ── */
-.fornec-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:12px; }
+.fornec-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:12px; }
 .fornec-card { border:1.5px solid var(--borda); border-radius:10px; padding:14px; background:var(--cinza); }
 .fornec-name { font-family:'Syne',sans-serif; font-weight:700; color:var(--azul); font-size:.88rem; margin-bottom:6px; }
 .fornec-meta { font-size:.76rem; color:#555; margin-bottom:3px; }
 .fornec-meta b { color:var(--azul2); }
 .fornec-actions { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+.nf-chips { display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; }
+.nf-chip { background:#fff; border:1.5px solid var(--borda); border-radius:20px; padding:4px 10px; font-size:.72rem; cursor:pointer; color:var(--azul); font-weight:600; }
+.nf-chip:hover { background:var(--azul); color:var(--neon); border-color:var(--azul); }
 
 /* ── HIST ── */
 .hist-item { display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:8px 12px; border-radius:7px; background:var(--cinza); margin-bottom:6px; font-size:.78rem; }
 .hist-badge { background:var(--azul); color:var(--neon); font-family:'Syne',sans-serif; font-weight:700; font-size:.68rem; padding:3px 8px; border-radius:4px; white-space:nowrap; }
 
-/* ── CONFIG MODAL ── */
+/* ── MODAIS ── */
 .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:1000; align-items:center; justify-content:center; padding:16px; }
 .modal-bg.open { display:flex; }
 .modal { background:#fff; border-radius:14px; padding:28px; max-width:560px; width:100%; max-height:90vh; overflow-y:auto; }
@@ -171,27 +210,17 @@ input.ef-venda { border-color:#8D6E63; }
 .step-list { counter-reset:steps; }
 .step-item { counter-increment:steps; display:flex; gap:10px; margin-bottom:10px; align-items:flex-start; font-size:.82rem; }
 .step-item::before { content:counter(steps); background:var(--azul); color:var(--neon); font-family:'Syne',sans-serif; font-weight:800; font-size:.75rem; min-width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
-.code-box { background:#1e1e1e; color:#a8ff78; border-radius:8px; padding:12px 14px; font-family:monospace; font-size:.75rem; overflow-x:auto; margin:8px 0; white-space:pre-wrap; word-break:break-all; }
+.code-box { background:#1e1e1e; color:#a8ff78; border-radius:8px; padding:12px 14px; font-family:monospace; font-size:.72rem; overflow-x:auto; margin:8px 0; white-space:pre-wrap; word-break:break-all; max-height:260px; overflow-y:auto; }
 .copy-btn { background:var(--azul2); color:#fff; border:none; border-radius:5px; padding:4px 10px; font-size:.72rem; cursor:pointer; margin-top:4px; }
 
-/* ── EMPTY ── */
 .empty { text-align:center; padding:28px; color:#aaa; font-size:.85rem; }
 
-/* ── TOOLTIP PRODUTO ── */
-.prod-cell { cursor:pointer; position:relative; }
-.prod-cell:hover { color:var(--azul2); text-decoration:underline dotted; }
-
-/* ── MODAL PRODUTO ── */
-#modal-produto { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:2000; align-items:center; justify-content:center; padding:16px; }
-#modal-produto.open { display:flex; }
+#modal-produto, #modal-colunas { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:2000; align-items:center; justify-content:center; padding:16px; }
+#modal-produto.open, #modal-colunas.open { display:flex; }
 #modal-produto .mprod { background:#fff; border-radius:12px; padding:24px; max-width:480px; width:100%; }
 #modal-produto .mprod h3 { font-family:'Syne',sans-serif; color:var(--azul); font-size:1rem; margin-bottom:8px; }
 #modal-produto .mprod p { font-size:.88rem; color:#444; line-height:1.5; word-break:break-word; }
 #modal-produto .mprod button { margin-top:14px; }
-
-/* ── MODAL COLUNAS ── */
-#modal-colunas { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:2000; align-items:center; justify-content:center; padding:16px; }
-#modal-colunas.open { display:flex; }
 #modal-colunas .mcol { background:#fff; border-radius:12px; padding:24px; max-width:420px; width:100%; max-height:85vh; overflow-y:auto; }
 #modal-colunas .mcol h3 { font-family:'Syne',sans-serif; color:var(--azul); font-size:.95rem; margin-bottom:12px; }
 .col-item { display:flex; align-items:center; gap:10px; padding:8px 10px; border:1.5px solid var(--borda); border-radius:7px; margin-bottom:6px; background:#fff; cursor:grab; user-select:none; font-size:.82rem; }
@@ -201,55 +230,36 @@ input.ef-venda { border-color:#8D6E63; }
 .col-drag-handle { color:#aaa; font-size:1rem; }
 .col-item input[type=checkbox] { accent-color:var(--azul2); width:14px; height:14px; }
 
-/* ── COLUNA PRODUTO REDIMENSIONÁVEL (estilo Excel) ── */
-.prod-col-wrap { display:flex; align-items:center; width:100%; height:100%; }
-.prod-col-wrap span.prod-text { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; cursor:pointer; }
-.prod-col-wrap span.prod-text:hover { color:var(--azul2); text-decoration:underline dotted; }
-.col-resizer {
-  position:absolute;
-  right:0; top:0; bottom:0;
-  width:5px;
-  cursor:col-resize;
-  z-index:10;
-  background:transparent;
-  transition:background .15s;
-}
-.col-resizer:hover, .col-resizer.resizing { background:var(--azul2); opacity:.7; }
-td.td-frozen { position:relative; }
-
-/* ── ARRASTAR TABELA COM MOUSE ── */
-.table-outer { cursor:grab; }
+/* ── ARRASTAR TABELA ── */
 .table-outer.grabbing { cursor:grabbing; user-select:none; }
 
-/* ── BTN DELETE LINHA ── */
-.btn-del-row { background:none; border:none; color:#e53935; cursor:pointer; font-size:.9rem; padding:2px 5px; border-radius:4px; transition:background .15s; }
+.btn-del-row { background:none; border:none; color:#e53935; cursor:pointer; font-size:.9rem; padding:2px 4px; border-radius:4px; }
 .btn-del-row:hover { background:#fce4ec; }
 .landscape-hint { display:none; background:var(--neon2); color:var(--azul); text-align:center; padding:6px; font-size:.75rem; font-weight:600; }
-@media (max-width:768px) and (orientation:portrait) {
-  .landscape-hint { display:block; }
-}
+@media (max-width:768px) and (orientation:portrait) { .landscape-hint { display:block; } }
 @media (max-width:600px) {
   header h1 { font-size:.85rem; }
   .tab-btn { font-size:.72rem; padding:7px 10px; }
   .card { padding:14px; border-radius:0 8px 8px 8px; }
   main { padding:12px 8px 60px; }
 }
+@media (prefers-reduced-motion: reduce) { * { transition:none !important; animation:none !important; } }
 </style>
 </head>
 <body>
 
-<!-- LANDSCAPE HINT -->
 <div class="landscape-hint">📱 Gire o dispositivo para modo paisagem para melhor visualização</div>
 
-<!-- HEADER -->
 <header>
   <div class="logo">LS</div>
   <h1>Loja Sabrina — Controle de Fornecedores</h1>
   <span id="sync-badge" class="sync-status sync-off">⚫ Offline</span>
-  <button id="btn-config-header" onclick="abrirConfig()">⚙️ Configurar</button>
+  <button class="btn-header" onclick="baixarBackup()">💾 Backup</button>
+  <button class="btn-header" onclick="document.getElementById('restore-input').click()">📂 Restaurar</button>
+  <input type="file" id="restore-input" accept=".json" style="display:none">
+  <button class="btn-header" onclick="abrirConfig()">⚙️ Configurar</button>
 </header>
 
-<!-- TABS -->
 <div class="tabs">
   <button class="tab-btn active" onclick="switchTab('importar')">📥 Importar XML</button>
   <button class="tab-btn" onclick="switchTab('matriz')">📋 Matriz</button>
@@ -259,7 +269,6 @@ td.td-frozen { position:relative; }
 
 <main>
 
-  <!-- STATS -->
   <div class="stats" id="stats-row">
     <div class="stat"><div class="stat-v" id="st-fornec">0</div><div class="stat-l">Fornecedores</div></div>
     <div class="stat"><div class="stat-v" id="st-itens">0</div><div class="stat-l">Itens</div></div>
@@ -268,19 +277,46 @@ td.td-frozen { position:relative; }
     <div class="stat"><div class="stat-v" id="st-alerta">0</div><div class="stat-l">Alertas reajuste</div></div>
   </div>
 
-  <!-- TAB IMPORTAR -->
+  <!-- ══════════ IMPORTAR ══════════ -->
   <div class="tab-content active card" id="tab-importar">
     <div class="card-title">Importar Nota Fiscal XML</div>
-    <div class="alert alert-info">💡 Arraste ou selecione o XML da NF-e. A ferramenta lê fornecedor, produtos, IPI e ICMS-ST automaticamente.</div>
+    <div class="alert alert-info">💡 Arraste ou selecione o XML da NF-e. A ferramenta lê fornecedor, produtos, IPI, ICMS-ST e sugere a estrutura de embalagem.</div>
     <div id="sync-warn-import"></div>
+
     <div class="drop-zone" id="drop-zone" onclick="document.getElementById('xml-input').click()">
       <input type="file" id="xml-input" accept=".xml" multiple>
       <div class="drop-icon">📄</div>
       <div class="drop-text">Clique ou arraste o XML da NF-e aqui</div>
       <div class="drop-sub">Aceita múltiplos arquivos — NF-e padrão SEFAZ</div>
     </div>
+
+    <!-- ENTRADA POR CHAVE DE ACESSO -->
+    <div class="chave-box">
+      <label for="input-chave">Digitar a chave de acesso (44 dígitos)</label>
+      <input type="text" id="input-chave" class="chave-input" inputmode="numeric" autocomplete="off"
+             placeholder="0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000">
+      <div class="chave-conta" id="chave-conta">0 de 44 dígitos</div>
+      <div id="chave-leitura"></div>
+      <div class="btn-row" style="margin-top:10px;">
+        <button class="btn btn-primary btn-sm" onclick="registrarChave()">📌 Registrar nota pendente</button>
+        <button class="btn btn-ghost btn-sm" onclick="abrirPortalChave()">🌐 Abrir portal da NF-e</button>
+        <button class="btn btn-ghost btn-sm" onclick="toggleColarXML()">📋 Colar XML</button>
+      </div>
+      <div id="area-colar" style="display:none;margin-top:10px;">
+        <textarea class="xml-paste" id="xml-texto" placeholder="Cole aqui todo o conteúdo do arquivo XML da NF-e"></textarea>
+        <div class="btn-row"><button class="btn btn-success btn-sm" onclick="lerXMLColado()">✅ Ler XML colado</button></div>
+      </div>
+    </div>
+
+    <div id="pendentes-area" style="margin-top:16px;"></div>
+
     <div id="preview-area" style="display:none;margin-top:18px;">
-      <div class="card-title" style="margin-bottom:10px;">Dados extraídos — revise antes de salvar</div>
+      <div class="card-title" style="margin-bottom:10px;">Dados extraídos — confira a embalagem antes de salvar</div>
+      <div class="alert alert-warn">
+        📦 <b>Estrutura de embalagem:</b> confira <b>Pct/Embal.</b> (pacotes ou displays dentro da embalagem da nota) e
+        <b>Un/Pacote</b>. É isso que separa o preço da caixa fechada do preço do pacote e da unidade.
+        <span class="tag-salva">salva</span> = já confirmada antes. <span class="tag-sugerida">sugerida</span> = leitura automática, confira.
+      </div>
       <div id="preview-content"></div>
       <div class="btn-row">
         <button class="btn btn-success" onclick="salvarNaMatriz()">✅ Confirmar e salvar</button>
@@ -289,33 +325,50 @@ td.td-frozen { position:relative; }
     </div>
   </div>
 
-  <!-- TAB MATRIZ -->
+  <!-- ══════════ MATRIZ ══════════ -->
   <div class="tab-content card" id="tab-matriz" style="display:none;">
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:14px;">
-      <div class="card-title" style="margin:0;">Planilha Matriz — Todos os Fornecedores</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+      <div class="card-title" style="margin:0;">Planilha Matriz</div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;">
         <button class="btn btn-primary btn-sm" onclick="carregarDoSheets()">🔄 Atualizar</button>
         <button class="btn btn-warn btn-sm" onclick="abrirModalColunas()">⚙️ Colunas</button>
+        <button class="btn btn-ghost btn-sm" onclick="resetarLarguras()">↔️ Larguras padrão</button>
         <button class="btn btn-success btn-sm" onclick="exportarMatriz()">📥 Baixar .xlsx</button>
         <button class="btn btn-danger btn-sm" onclick="limparMatriz()">🗑️ Limpar</button>
       </div>
     </div>
-    <div id="matriz-alert"></div>
-    <div class="alert alert-info" style="font-size:.76rem;margin-bottom:10px;">
-      🔶 <b>ST</b> = produto com Substituição Tributária — ICMS-ST já incluído no custo unitário real.
-      Colunas em <span style="color:var(--marrom-h);font-weight:700">marrom</span> = Preço de Venda.
+
+    <div class="filtros">
+      <input type="text" id="f-busca" placeholder="🔎 Buscar produto, fornecedor ou nº da NF" oninput="setFiltro('busca',this.value)">
+      <select id="f-fornec" onchange="setFiltro('fornec',this.value)"><option value="">Todos os fornecedores</option></select>
+      <select id="f-nota" onchange="setFiltro('nota',this.value)"><option value="">Todas as notas</option></select>
+      <label for="f-de">De</label><input type="date" id="f-de" onchange="setFiltro('de',this.value)">
+      <label for="f-ate">Até</label><input type="date" id="f-ate" onchange="setFiltro('ate',this.value)">
+      <label style="display:flex;align-items:center;gap:5px;cursor:pointer">
+        <input type="checkbox" id="f-agrupar" onchange="setFiltro('agrupar',this.checked)"> separar por nota
+      </label>
+      <button class="btn btn-ghost btn-sm" onclick="limparFiltros()">Limpar filtros</button>
     </div>
-    <div class="table-outer">
+
+    <div id="matriz-alert"></div>
+    <div class="alert alert-info" style="font-size:.75rem;margin-bottom:10px;">
+      🔶 <b>ST</b> = ICMS-ST já embutido no custo. Colunas <span style="color:#1B5E20;font-weight:700">verdes</span> = desmembramento da embalagem ·
+      <span style="color:var(--marrom-h);font-weight:700">marrons</span> = preço de venda.
+      Arraste a borda direita do título para largura; arraste o título para trocar de lugar; clique duas vezes na borda para recolher.
+    </div>
+
+    <div class="table-outer" id="matriz-outer">
       <table id="tabela-matriz">
+        <colgroup id="matriz-colgroup"></colgroup>
         <thead><tr></tr></thead>
         <tbody id="matriz-body">
-          <tr><td colspan="23" class="empty">Nenhum dado. Importe um XML ou clique em Atualizar.</td></tr>
+          <tr><td class="empty">Nenhum dado. Importe um XML ou clique em Atualizar.</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- TAB FORNECEDORES -->
+  <!-- ══════════ FORNECEDORES ══════════ -->
   <div class="tab-content card" id="tab-fornecedores" style="display:none;">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
       <div class="card-title" style="margin:0;">Planilhas por Fornecedor</div>
@@ -324,13 +377,22 @@ td.td-frozen { position:relative; }
         <button class="btn btn-primary btn-sm" onclick="ordenarFornecedores('data')">📅 Por data</button>
       </div>
     </div>
-    <div class="alert alert-info" style="margin-bottom:12px;">Cada fornecedor tem histórico individual. Baixe ou limpe individualmente.</div>
+
+    <div class="filtros">
+      <input type="text" id="ff-busca" placeholder="🔎 Buscar fornecedor" oninput="setFiltroFornec('busca',this.value)">
+      <label for="ff-de">Notas de</label><input type="date" id="ff-de" onchange="setFiltroFornec('de',this.value)">
+      <label for="ff-ate">até</label><input type="date" id="ff-ate" onchange="setFiltroFornec('ate',this.value)">
+      <button class="btn btn-ghost btn-sm" onclick="limparFiltrosFornec()">Limpar filtros</button>
+    </div>
+
+    <div class="alfabeto" id="alfabeto"></div>
+
     <div class="fornec-grid" id="fornec-grid">
       <div class="empty">Nenhum fornecedor cadastrado ainda.</div>
     </div>
   </div>
 
-  <!-- TAB HISTÓRICO -->
+  <!-- ══════════ HISTÓRICO ══════════ -->
   <div class="tab-content card" id="tab-historico" style="display:none;">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:14px;">
       <div class="card-title" style="margin:0;">Histórico de Importações</div>
@@ -341,7 +403,7 @@ td.td-frozen { position:relative; }
 
 </main>
 
-<!-- MODAL PRODUTO COMPLETO -->
+<!-- MODAL PRODUTO -->
 <div id="modal-produto">
   <div class="mprod">
     <h3>📦 Descrição completa do produto</h3>
@@ -350,11 +412,11 @@ td.td-frozen { position:relative; }
   </div>
 </div>
 
-<!-- MODAL ORGANIZAR COLUNAS -->
+<!-- MODAL COLUNAS -->
 <div id="modal-colunas">
   <div class="mcol">
     <h3>⚙️ Organizar e ocultar colunas</h3>
-    <p style="font-size:.76rem;color:#666;margin-bottom:12px;">Arraste para reordenar. Desmarque para ocultar.</p>
+    <p style="font-size:.76rem;color:#666;margin-bottom:12px;">Arraste para reordenar. Desmarque para ocultar. Também dá para arrastar os títulos direto na tabela.</p>
     <div id="col-lista"></div>
     <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
       <button class="btn btn-success btn-sm" onclick="aplicarColunas()">✅ Aplicar</button>
@@ -369,8 +431,9 @@ td.td-frozen { position:relative; }
   <div class="modal">
     <h2>⚙️ Configurar Sincronização com Google Sheets</h2>
 
-    <div class="alert alert-warn" style="margin-bottom:14px;">
-      Configure UMA VEZ. Após isso, todos os dispositivos sincronizam automaticamente.
+    <div class="alert alert-danger" style="margin-bottom:14px;">
+      ⚠️ <b>Atualize o código do Apps Script.</b> Esta versão grava campos novos (estrutura de embalagem, nº da nota, chave).
+      Se o script antigo continuar lá, esses campos se perdem a cada sincronização. Copie o código abaixo e substitua o antigo.
     </div>
 
     <label>URL do Google Apps Script (Web App):</label>
@@ -387,86 +450,87 @@ td.td-frozen { position:relative; }
     </div>
 
     <div class="step-list">
-      <div class="step-item">Acesse <a href="https://sheets.google.com" target="_blank" style="color:var(--azul2)">sheets.google.com</a> e crie uma planilha nova. Dê o nome <b>Loja Sabrina — Fornecedores</b>.</div>
-      <div class="step-item">Dentro da planilha, clique em <b>Extensões → Apps Script</b>.</div>
-      <div class="step-item">Apague o código que aparecer e cole o código abaixo no lugar:
+      <div class="step-item">Abra sua planilha <b>Loja Sabrina — Fornecedores</b> no Google Sheets (ou crie uma nova em <a href="https://sheets.google.com" target="_blank" rel="noopener" style="color:var(--azul2)">sheets.google.com</a>).</div>
+      <div class="step-item">Clique em <b>Extensões → Apps Script</b>.</div>
+      <div class="step-item">Apague TODO o código que estiver lá e cole este no lugar:
         <div style="margin-top:6px;">
-          <div class="code-box" id="apps-script-code">// Cole este código no Google Apps Script
+          <div class="code-box" id="apps-script-code">// Loja Sabrina — sincronizacao (versao 2)
+// Grava qualquer campo novo automaticamente, sem precisar mexer aqui de novo.
 
-const SHEET_NAME_MATRIZ   = 'Matriz';
-const SHEET_NAME_HISTORICO = 'Historico';
+const SHEET_MATRIZ    = 'Matriz';
+const SHEET_HISTORICO = 'Historico';
+const COLUNAS_TEXTO   = ['chaveNF','cnpj','nNF','notaId','cProd','ncm','cean','dataNF'];
 
 function doGet(e) {
-  const action = e.parameter.action || 'getData';
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-
-  if (action === 'getData') {
-    const mat = getSheetData(ss, SHEET_NAME_MATRIZ);
-    const his = getSheetData(ss, SHEET_NAME_HISTORICO);
-    return jsonResponse({ matriz: mat, historico: his });
-  }
-  return jsonResponse({ error: 'Ação desconhecida' });
+  return jsonResponse({
+    matriz:    getSheetData(ss, SHEET_MATRIZ),
+    historico: getSheetData(ss, SHEET_HISTORICO)
+  });
 }
 
 function doPost(e) {
   try {
-    const body   = JSON.parse(e.postData.contents);
-    const action = body.action;
-    const ss     = SpreadsheetApp.getActiveSpreadsheet();
-
-    if (action === 'saveMatriz') {
-      saveSheetData(ss, SHEET_NAME_MATRIZ, body.data, getMatrizHeaders());
+    const body = JSON.parse(e.postData.contents);
+    const ss   = SpreadsheetApp.getActiveSpreadsheet();
+    if (body.action === 'saveAll') {
+      saveSheetData(ss, SHEET_MATRIZ,    body.matriz);
+      saveSheetData(ss, SHEET_HISTORICO, body.historico);
       return jsonResponse({ ok: true });
     }
-    if (action === 'saveHistorico') {
-      saveSheetData(ss, SHEET_NAME_HISTORICO, body.data, getHistoricoHeaders());
+    if (body.action === 'saveMatriz') {
+      saveSheetData(ss, SHEET_MATRIZ, body.data);
       return jsonResponse({ ok: true });
     }
-    if (action === 'saveAll') {
-      saveSheetData(ss, SHEET_NAME_MATRIZ,    body.matriz,    getMatrizHeaders());
-      saveSheetData(ss, SHEET_NAME_HISTORICO, body.historico, getHistoricoHeaders());
-      return jsonResponse({ ok: true });
-    }
-    return jsonResponse({ error: 'Ação inválida' });
-  } catch(err) {
+    return jsonResponse({ error: 'Acao invalida' });
+  } catch (err) {
     return jsonResponse({ error: err.message });
   }
 }
 
-function getMatrizHeaders() {
-  return ['fornecedor','cnpj','produto','un','qtde','precoNF','ipi',
-          'temST','vICMSST','pICMSST','stPorUnidade','custoUnit',
-          'reajuste','novoPreco','variacao','dataNF','nNF','status',
-          'markup','precoVenda','csosn','timestamp'];
-}
-function getHistoricoHeaders() {
-  return ['data','hora','qtdeItens','fornecs','nfs'];
-}
-
 function getSheetData(ss, name) {
-  let sheet = ss.getSheetByName(name);
+  const sheet = ss.getSheetByName(name);
   if (!sheet) return [];
   const vals = sheet.getDataRange().getValues();
   if (vals.length < 2) return [];
   const headers = vals[0];
-  return vals.slice(1).map(row => {
+  return vals.slice(1).map(function (row) {
     const obj = {};
-    headers.forEach((h, i) => { obj[h] = row[i]; });
+    headers.forEach(function (h, i) { if (h) obj[h] = row[i]; });
     return obj;
   });
 }
 
-function saveSheetData(ss, name, data, headers) {
+function saveSheetData(ss, name, data) {
   let sheet = ss.getSheetByName(name);
   if (!sheet) sheet = ss.insertSheet(name);
-  sheet.clearContents();
-  if (!data || !data.length) {
-    sheet.getRange(1,1,1,headers.length).setValues([headers]);
-    return;
-  }
-  const rows = data.map(obj => headers.map(h => obj[h] !== undefined ? obj[h] : ''));
-  sheet.getRange(1,1,1,headers.length).setValues([headers]);
-  sheet.getRange(2,1,rows.length,headers.length).setValues(rows);
+  sheet.clear();
+  if (!data || !data.length) return;
+
+  const headers = [];
+  data.forEach(function (o) {
+    Object.keys(o).forEach(function (k) { if (headers.indexOf(k) < 0) headers.push(k); });
+  });
+
+  headers.forEach(function (h, i) {
+    if (COLUNAS_TEXTO.indexOf(h) >= 0) {
+      sheet.getRange(1, i + 1, data.length + 1, 1).setNumberFormat('@');
+    }
+  });
+
+  const rows = data.map(function (o) {
+    return headers.map(function (h) {
+      const v = o[h];
+      if (v === undefined || v === null) return '';
+      if (typeof v === 'object') return JSON.stringify(v);
+      return v;
+    });
+  });
+
+  sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+  sheet.getRange(2, 1, rows.length, headers.length).setValues(rows);
+  sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
+  sheet.setFrozenRows(1);
 }
 
 function jsonResponse(obj) {
@@ -477,10 +541,9 @@ function jsonResponse(obj) {
           <button class="copy-btn" onclick="copiarCodigo()">📋 Copiar código</button>
         </div>
       </div>
-      <div class="step-item">Clique em <b>Salvar</b> (ícone de disquete) e dê um nome ao projeto, ex: <b>LojaSabrina</b>.</div>
-      <div class="step-item">Clique em <b>Implantar → Nova implantação</b>. Em "Tipo", escolha <b>App da Web</b>. Em "Quem pode acessar", selecione <b>Qualquer pessoa</b>. Clique em <b>Implantar</b>.</div>
-      <div class="step-item">Autorize o acesso quando solicitado (clique em "Permitir").</div>
-      <div class="step-item">Copie a <b>URL do app da web</b> gerada e cole no campo acima. Clique em <b>Salvar e testar conexão</b>. ✅</div>
+      <div class="step-item">Clique em <b>Salvar</b> (disquete).</div>
+      <div class="step-item">Clique em <b>Implantar → Gerenciar implantações</b>, clique no lápis (editar), em "Versão" escolha <b>Nova versão</b> e clique em <b>Implantar</b>. A URL continua a mesma. Se for a primeira vez, use <b>Nova implantação → App da Web → Quem pode acessar: Qualquer pessoa</b>.</div>
+      <div class="step-item">Cole a URL no campo acima e clique em <b>Salvar e testar conexão</b>. ✅</div>
     </div>
   </div>
 </div>
@@ -489,90 +552,178 @@ function jsonResponse(obj) {
 // ═══════════════════════════════════════════════════════════
 // ESTADO
 // ═══════════════════════════════════════════════════════════
-let matrizData   = JSON.parse(localStorage.getItem('ls_matriz')    || '[]');
-let historicoLog = JSON.parse(localStorage.getItem('ls_historico') || '[]');
+let matrizData   = JSON.parse(localStorage.getItem('ls_matriz')     || '[]');
+let historicoLog = JSON.parse(localStorage.getItem('ls_historico')  || '[]');
+let estruturas   = JSON.parse(localStorage.getItem('ls_estruturas') || '{}');
+let pendentes    = JSON.parse(localStorage.getItem('ls_pendentes')  || '[]');
 let scriptURL    = localStorage.getItem('ls_script_url') || '';
 let pendingItems = [];
 let syncAtivo    = false;
 
 // ═══════════════════════════════════════════════════════════
-// DEFINIÇÃO DE COLUNAS (ordem e visibilidade)
+// COLUNAS
 // ═══════════════════════════════════════════════════════════
 const COLUNAS_DEFAULT = [
-  { id:'del',      label:'',                 cls:'',         fixo:true  },
-  { id:'num',      label:'#',                cls:'',         fixo:true  },
-  { id:'fornec',   label:'Fornecedor',        cls:'left',     fixo:false },
-  { id:'produto',  label:'Produto',           cls:'left',     fixo:false },
-  { id:'un',       label:'UN',               cls:'',         fixo:false },
-  { id:'qtde',     label:'Qtde/Embal.',       cls:'',         fixo:false },
-  { id:'precoNF',  label:'Preço NF (R$)',     cls:'',         fixo:false },
-  { id:'ipi',      label:'IPI (%)',           cls:'',         fixo:false },
-  { id:'st',       label:'ST?',              cls:'td-st',    fixo:false },
-  { id:'stUnit',   label:'ICMS-ST Unit.',     cls:'td-st',    fixo:false },
-  { id:'custo',    label:'Custo Unit. Real',  cls:'',         fixo:false },
-  { id:'unEmbal',  label:'Un/Embal.',         cls:'td-desm',  fixo:false },
-  { id:'totUnid',  label:'Total Unid.',       cls:'td-desm',  fixo:false },
-  { id:'cUnid',    label:'Custo/Unid.',       cls:'td-desm',  fixo:false },
-  { id:'reajuste', label:'% Reajuste',        cls:'',         fixo:false },
-  { id:'novoPreco',label:'Novo Preço Est.',   cls:'',         fixo:false },
-  { id:'variacao', label:'Variação (R$)',     cls:'',         fixo:false },
-  { id:'dataNF',   label:'Data NF',           cls:'',         fixo:false },
-  { id:'nNF',      label:'Nº NF',             cls:'',         fixo:false },
-  { id:'status',   label:'Status',            cls:'',         fixo:false },
-  { id:'markup',   label:'% Markup',          cls:'td-venda', fixo:false },
-  { id:'vEmbal',   label:'Venda/Embal.',      cls:'td-venda', fixo:false },
-  { id:'vUnid',    label:'Venda/Unid.',       cls:'td-venda', fixo:false },
+  { id:'del',      label:'',                 w:38,  cls:'',        fixo:true  },
+  { id:'num',      label:'#',                w:40,  cls:''  },
+  { id:'fornec',   label:'Fornecedor',       w:150, cls:'left' },
+  { id:'produto',  label:'Produto',          w:230, cls:'left' },
+  { id:'un',       label:'UN da NF',         w:64,  cls:''  },
+  { id:'qtde',     label:'Qtde da NF',       w:78,  cls:''  },
+  { id:'precoNF',  label:'Preço NF (R$)',    w:104, cls:''  },
+  { id:'ipi',      label:'IPI (%)',          w:64,  cls:''  },
+  { id:'st',       label:'ST?',              w:64,  cls:'td-st' },
+  { id:'stUnit',   label:'ICMS-ST Unit.',    w:100, cls:'td-st' },
+  { id:'custo',    label:'Custo Embal. (R$)',w:112, cls:''  },
+  { id:'pctEmbal', label:'Pct/Embal.',       w:82,  cls:'td-desm' },
+  { id:'unPct',    label:'Un/Pacote',        w:82,  cls:'td-desm' },
+  { id:'totUnid',  label:'Total Unid.',      w:88,  cls:'td-desm' },
+  { id:'cPacote',  label:'Custo/Pacote',     w:104, cls:'td-desm' },
+  { id:'cUnid',    label:'Custo/Unid.',      w:104, cls:'td-desm' },
+  { id:'reajuste', label:'% Reajuste',       w:84,  cls:''  },
+  { id:'novoPreco',label:'Novo Preço Est.',  w:106, cls:''  },
+  { id:'variacao', label:'Variação (R$)',    w:100, cls:''  },
+  { id:'dataNF',   label:'Data NF',          w:86,  cls:''  },
+  { id:'nNF',      label:'Nº NF',            w:74,  cls:''  },
+  { id:'status',   label:'Status',           w:82,  cls:''  },
+  { id:'markup',   label:'% Markup',         w:82,  cls:'td-venda' },
+  { id:'vEmbal',   label:'Venda/Embal.',     w:100, cls:'td-venda' },
+  { id:'vPacote',  label:'Venda/Pacote',     w:100, cls:'td-venda' },
+  { id:'vUnid',    label:'Venda/Unid.',      w:100, cls:'td-venda' },
 ];
+const COL_ST    = ['st','stUnit'];
+const COL_DESM  = ['pctEmbal','unPct','totUnid','cPacote','cUnid'];
+const COL_VENDA = ['markup','vEmbal','vPacote','vUnid'];
 
-let colState = JSON.parse(localStorage.getItem('ls_colunas') || 'null');
-if (!colState) colState = COLUNAS_DEFAULT.map(c => ({ id:c.id, visivel:true }));
+function mesclarColState(salvo) {
+  const base = COLUNAS_DEFAULT.map(c => ({ id:c.id, visivel:true }));
+  if (!Array.isArray(salvo) || !salvo.length) return base;
+  const validos = COLUNAS_DEFAULT.map(c => c.id);
+  const ordenado = salvo.filter(s => validos.includes(s.id))
+                        .map(s => ({ id:s.id, visivel: s.visivel !== false }));
+  // acrescenta ids novos na posição padrão
+  COLUNAS_DEFAULT.forEach((c, i) => {
+    if (!ordenado.find(o => o.id === c.id)) ordenado.splice(Math.min(i, ordenado.length), 0, { id:c.id, visivel:true });
+  });
+  return ordenado;
+}
+let colState  = mesclarColState(JSON.parse(localStorage.getItem('ls_colunas') || 'null'));
+let colWidths = JSON.parse(localStorage.getItem('ls_col_w') || '{}');
+let colunaFixa = localStorage.getItem('ls_col_fixa') || 'produto';
 
+function larguraCol(id) {
+  if (colWidths[id] !== undefined) return colWidths[id];
+  const d = COLUNAS_DEFAULT.find(c => c.id === id);
+  return d ? d.w : 100;
+}
 function getColOrder() {
-  // retorna colunas na ordem salva, mesclando com defaults
   return colState.map(cs => {
     const def = COLUNAS_DEFAULT.find(c => c.id === cs.id);
-    return def ? { ...def, visivel: cs.visivel } : null;
+    return def ? Object.assign({}, def, { visivel: cs.visivel }) : null;
   }).filter(Boolean);
+}
+
+// ═══════════════════════════════════════════════════════════
+// MIGRAÇÃO / NORMALIZAÇÃO
+// ═══════════════════════════════════════════════════════════
+function normalizarNome(s) {
+  return (s || '').toString().toUpperCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^A-Z0-9]+/g, ' ').trim();
+}
+function chaveEstrutura(it) {
+  const cod = it.cProd ? String(it.cProd).trim() : '';
+  return (it.cnpj || '') + '|' + (cod || normalizarNome(it.produto));
+}
+function migrarLinha(r) {
+  const n = Object.assign({}, r);
+  n.qtde         = parseFloat(n.qtde)         || 1;
+  n.precoNF      = parseFloat(n.precoNF)      || 0;
+  n.ipi          = parseFloat(n.ipi)          || 0;
+  n.vICMSST      = parseFloat(n.vICMSST)      || 0;
+  n.pICMSST      = parseFloat(n.pICMSST)      || 0;
+  n.stPorUnidade = parseFloat(n.stPorUnidade) || 0;
+  n.custoUnit    = parseFloat(n.custoUnit)    || 0;
+  n.reajuste     = parseFloat(n.reajuste)     || 0;
+  n.novoPreco    = parseFloat(n.novoPreco)    || 0;
+  n.variacao     = parseFloat(n.variacao)     || 0;
+  n.markup       = parseFloat(n.markup)       || 0;
+  n.temST        = n.temST === true || n.temST === 'true' || n.temST === 'TRUE' || n.temST === 'VERDADEIRO';
+  // estrutura de embalagem: converte o antigo unEmbal
+  if (n.pctEmbal === undefined || n.pctEmbal === '' || n.unPct === undefined || n.unPct === '') {
+    const antigo = parseInt(n.unEmbal) || 1;
+    n.pctEmbal = 1;
+    n.unPct    = antigo > 0 ? antigo : 1;
+  }
+  n.pctEmbal = Math.max(1, parseInt(n.pctEmbal) || 1);
+  n.unPct    = Math.max(1, parseInt(n.unPct)    || 1);
+  delete n.unEmbal;
+  if (!n.notaId) n.notaId = (n.chaveNF && String(n.chaveNF).length === 44)
+    ? String(n.chaveNF)
+    : (n.cnpj || 's-cnpj') + '-' + (n.nNF || 's-nf');
+  n.cnpj    = n.cnpj    ? String(n.cnpj)    : '';
+  n.nNF     = n.nNF     ? String(n.nNF)     : '';
+  n.chaveNF = n.chaveNF ? String(n.chaveNF) : '';
+  return n;
+}
+matrizData = matrizData.map(migrarLinha);
+salvarLocal();
+
+function salvarLocal() {
+  localStorage.setItem('ls_matriz',     JSON.stringify(matrizData));
+  localStorage.setItem('ls_historico',  JSON.stringify(historicoLog));
+  localStorage.setItem('ls_estruturas', JSON.stringify(estruturas));
+  localStorage.setItem('ls_pendentes',  JSON.stringify(pendentes));
+}
+
+// ═══════════════════════════════════════════════════════════
+// DATAS
+// ═══════════════════════════════════════════════════════════
+function dataBRparaDate(s) {
+  if (!s) return null;
+  const t = String(s).trim();
+  let m = t.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (m) return new Date(+m[3], +m[2] - 1, +m[1]);
+  m = t.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return new Date(+m[1], +m[2] - 1, +m[3]);
+  return null;
+}
+function isoParaDate(s) {
+  if (!s) return null;
+  const m = String(s).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null;
 }
 
 // ═══════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════
-document.getElementById('data-hoje') && (document.getElementById('data-hoje').textContent =
-  new Date().toLocaleDateString('pt-BR'));
-
-atualizarStats();
-atualizarSyncBadge();
-if (scriptURL) carregarDoSheets();
-
-// ═══════════════════════════════════════════════════════════
-// TABS
-// ═══════════════════════════════════════════════════════════
 function switchTab(name) {
-  document.querySelectorAll('.tab-btn').forEach((b,i) => {
-    const ids = ['importar','matriz','fornecedores','historico'];
-    b.classList.toggle('active', ids[i] === name);
-  });
+  const ids = ['importar','matriz','fornecedores','historico'];
+  document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', ids[i] === name));
   document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
   document.getElementById('tab-' + name).style.display = 'block';
   if (name === 'matriz')       renderMatriz();
   if (name === 'fornecedores') renderFornecedores();
   if (name === 'historico')    renderHistorico();
+  if (name === 'importar')     renderPendentes();
+}
+function renderAtivo() {
+  const ativo = document.querySelector('.tab-btn.active');
+  if (!ativo) return;
+  const ids = ['importar','matriz','fornecedores','historico'];
+  const idx = [...document.querySelectorAll('.tab-btn')].indexOf(ativo);
+  if (idx >= 0) switchTab(ids[idx]);
 }
 
 // ═══════════════════════════════════════════════════════════
-// CONFIG
+// CONFIG / SYNC
 // ═══════════════════════════════════════════════════════════
 function abrirConfig() {
   document.getElementById('input-script-url').value = scriptURL;
   document.getElementById('modal-config').classList.add('open');
 }
-function fecharConfig() {
-  document.getElementById('modal-config').classList.remove('open');
-}
-document.getElementById('modal-config').addEventListener('click', e => {
-  if (e.target === e.currentTarget) fecharConfig();
-});
+function fecharConfig() { document.getElementById('modal-config').classList.remove('open'); }
+document.getElementById('modal-config').addEventListener('click', e => { if (e.target === e.currentTarget) fecharConfig(); });
 
 async function salvarConfig() {
   const url = document.getElementById('input-script-url').value.trim();
@@ -581,52 +732,25 @@ async function salvarConfig() {
   localStorage.setItem('ls_script_url', url);
   atualizarSyncBadge('testando');
   const ok = await testarConexao();
-  if (ok) {
-    atualizarSyncBadge('ok');
-    fecharConfig();
-    carregarDoSheets();
-  } else {
-    atualizarSyncBadge('erro');
-    alert('Não foi possível conectar. Verifique a URL e se o Apps Script está publicado corretamente.');
-  }
+  if (ok) { atualizarSyncBadge('ok'); fecharConfig(); carregarDoSheets(); }
+  else { atualizarSyncBadge('erro'); alert('Não foi possível conectar. Verifique a URL e se o Apps Script está publicado como App da Web para "Qualquer pessoa".'); }
 }
-
 function copiarCodigo() {
   const txt = document.getElementById('apps-script-code').textContent;
-  navigator.clipboard.writeText(txt).then(() => alert('Código copiado! Cole no Google Apps Script.'));
+  navigator.clipboard.writeText(txt).then(() => alert('Código copiado. Cole no Google Apps Script no lugar do antigo.'));
 }
-
-// ═══════════════════════════════════════════════════════════
-// SYNC BADGE
-// ═══════════════════════════════════════════════════════════
 function atualizarSyncBadge(estado) {
   const el = document.getElementById('sync-badge');
-  if (!scriptURL && !estado) {
-    el.className = 'sync-status sync-off'; el.textContent = '⚫ Sem sync'; return;
-  }
-  if (estado === 'testando') {
-    el.className = 'sync-status sync-warn'; el.textContent = '🔄 Conectando...'; return;
-  }
-  if (estado === 'ok' || (scriptURL && !estado)) {
-    el.className = 'sync-status sync-ok'; el.textContent = '🟢 Sincronizado'; syncAtivo = true; return;
-  }
-  if (estado === 'salvando') {
-    el.className = 'sync-status sync-warn'; el.textContent = '💾 Salvando...'; return;
-  }
+  if (!scriptURL && !estado) { el.className = 'sync-status sync-off'; el.textContent = '⚫ Sem sync'; return; }
+  if (estado === 'testando')  { el.className = 'sync-status sync-warn'; el.textContent = '🔄 Conectando...'; return; }
+  if (estado === 'ok' || (scriptURL && !estado)) { el.className = 'sync-status sync-ok'; el.textContent = '🟢 Sincronizado'; syncAtivo = true; return; }
+  if (estado === 'salvando')  { el.className = 'sync-status sync-warn'; el.textContent = '💾 Salvando...'; return; }
   el.className = 'sync-status sync-off'; el.textContent = '🔴 Erro sync';
 }
-
-// ═══════════════════════════════════════════════════════════
-// GOOGLE SHEETS — API
-// ═══════════════════════════════════════════════════════════
 async function testarConexao() {
-  try {
-    const r = await fetch(scriptURL + '?action=getData');
-    const d = await r.json();
-    return !d.error;
-  } catch { return false; }
+  try { const r = await fetch(scriptURL + '?action=getData'); const d = await r.json(); return !d.error; }
+  catch { return false; }
 }
-
 async function carregarDoSheets() {
   if (!scriptURL) return;
   atualizarSyncBadge('testando');
@@ -634,52 +758,168 @@ async function carregarDoSheets() {
     const r = await fetch(scriptURL + '?action=getData');
     const d = await r.json();
     if (d.error) throw new Error(d.error);
-    if (d.matriz && d.matriz.length)   matrizData   = d.matriz.map(normalizeRow);
+    if (d.matriz && d.matriz.length) matrizData = mesclarComLocal(d.matriz.map(migrarLinha));
     if (d.historico && d.historico.length) historicoLog = d.historico;
-    localStorage.setItem('ls_matriz',    JSON.stringify(matrizData));
-    localStorage.setItem('ls_historico', JSON.stringify(historicoLog));
+    salvarLocal();
     atualizarStats();
     atualizarSyncBadge('ok');
     renderAtivo();
-  } catch(e) {
-    atualizarSyncBadge('erro');
-  }
+  } catch (e) { atualizarSyncBadge('erro'); }
 }
-
-function normalizeRow(r) {
-  return {
-    ...r,
-    qtde:         parseFloat(r.qtde)         || 1,
-    precoNF:      parseFloat(r.precoNF)      || 0,
-    ipi:          parseFloat(r.ipi)          || 0,
-    vICMSST:      parseFloat(r.vICMSST)      || 0,
-    pICMSST:      parseFloat(r.pICMSST)      || 0,
-    stPorUnidade: parseFloat(r.stPorUnidade) || 0,
-    custoUnit:    parseFloat(r.custoUnit)    || 0,
-    reajuste:     parseFloat(r.reajuste)     || 0,
-    novoPreco:    parseFloat(r.novoPreco)    || 0,
-    variacao:     parseFloat(r.variacao)     || 0,
-    markup:       parseFloat(r.markup)       || 0,
-    precoVenda:   parseFloat(r.precoVenda)   || 0,
-    temST:        r.temST === true || r.temST === 'true' || r.temST === 'TRUE',
-    unEmbal:      parseInt(r.unEmbal) || 1,
-  };
+// Protege a estrutura de embalagem caso o Apps Script antigo ainda esteja publicado
+function mesclarComLocal(remoto) {
+  const locais = {};
+  matrizData.forEach(r => { locais[(r.notaId || '') + '|' + normalizarNome(r.produto)] = r; });
+  return remoto.map(r => {
+    const l = locais[(r.notaId || '') + '|' + normalizarNome(r.produto)];
+    if (l && (r.pctEmbal === 1 && r.unPct === 1) && (l.pctEmbal > 1 || l.unPct > 1)) {
+      r.pctEmbal = l.pctEmbal; r.unPct = l.unPct;
+    }
+    if (l && !r.markup && l.markup) r.markup = l.markup;
+    return r;
+  });
 }
-
 async function salvarNoSheets() {
   if (!scriptURL) return;
   atualizarSyncBadge('salvando');
   try {
-    await fetch(scriptURL, {
-      method: 'POST',
-      body: JSON.stringify({ action:'saveAll', matriz: matrizData, historico: historicoLog })
-    });
+    await fetch(scriptURL, { method:'POST', body: JSON.stringify({ action:'saveAll', matriz: matrizData, historico: historicoLog }) });
     atualizarSyncBadge('ok');
   } catch { atualizarSyncBadge('erro'); }
 }
 
 // ═══════════════════════════════════════════════════════════
-// DRAG & DROP
+// BACKUP LOCAL
+// ═══════════════════════════════════════════════════════════
+function baixarBackup() {
+  const dados = { versao:2, gerado:new Date().toISOString(), matriz:matrizData, historico:historicoLog, estruturas, pendentes };
+  const blob = new Blob([JSON.stringify(dados, null, 2)], { type:'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'backup-loja-sabrina-' + new Date().toISOString().split('T')[0] + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+document.getElementById('restore-input').addEventListener('change', e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const rd = new FileReader();
+  rd.onload = ev => {
+    try {
+      const d = JSON.parse(ev.target.result);
+      if (!d.matriz) throw new Error('sem matriz');
+      if (!confirm('Substituir os dados atuais pelo backup de ' + (d.gerado || '').substring(0,10) + '? (' + d.matriz.length + ' itens)')) return;
+      matrizData   = d.matriz.map(migrarLinha);
+      historicoLog = d.historico  || [];
+      estruturas   = d.estruturas || {};
+      pendentes    = d.pendentes  || [];
+      salvarLocal(); atualizarStats(); renderAtivo();
+      alert('Backup restaurado: ' + matrizData.length + ' itens.');
+    } catch (err) { alert('Arquivo inválido. Escolha um backup .json gerado por este app.'); }
+  };
+  rd.readAsText(f);
+  e.target.value = '';
+});
+
+// ═══════════════════════════════════════════════════════════
+// CHAVE DE ACESSO
+// ═══════════════════════════════════════════════════════════
+const inputChave = document.getElementById('input-chave');
+inputChave.addEventListener('input', () => {
+  const d = inputChave.value.replace(/\D/g, '').substring(0, 44);
+  inputChave.value = d.replace(/(.{4})/g, '$1 ').trim();
+  document.getElementById('chave-conta').textContent = d.length + ' de 44 dígitos';
+  document.getElementById('chave-leitura').innerHTML = d.length === 44 ? htmlLeituraChave(d) : '';
+});
+
+function dvChave(ch43) {
+  let peso = 2, soma = 0;
+  for (let i = 42; i >= 0; i--) { soma += parseInt(ch43[i]) * peso; peso = peso === 9 ? 2 : peso + 1; }
+  const resto = soma % 11;
+  return (resto === 0 || resto === 1) ? 0 : 11 - resto;
+}
+const UF_COD = {11:'RO',12:'AC',13:'AM',14:'RR',15:'PA',16:'AP',17:'TO',21:'MA',22:'PI',23:'CE',24:'RN',25:'PB',26:'PE',27:'AL',28:'SE',29:'BA',31:'MG',32:'ES',33:'RJ',35:'SP',41:'PR',42:'SC',43:'RS',50:'MS',51:'MT',52:'GO',53:'DF'};
+
+function lerChave(d) {
+  const cnpj = d.substring(6, 20);
+  const nome = (matrizData.find(r => String(r.cnpj) === cnpj) || {}).fornecedor || '';
+  return {
+    chave: d,
+    uf:    UF_COD[parseInt(d.substring(0,2))] || '??',
+    ano:   '20' + d.substring(2,4),
+    mes:   d.substring(4,6),
+    cnpj,
+    fornecedor: nome,
+    serie: String(parseInt(d.substring(22,25))),
+    nNF:   String(parseInt(d.substring(25,34))),
+    dvOk:  dvChave(d.substring(0,43)) === parseInt(d[43])
+  };
+}
+function htmlLeituraChave(d) {
+  const c = lerChave(d);
+  const jaTem = matrizData.some(r => r.chaveNF === d) || matrizData.some(r => String(r.cnpj) === c.cnpj && String(r.nNF) === c.nNF);
+  return `<div class="alert ${c.dvOk ? 'alert-success' : 'alert-danger'}" style="margin-top:10px;margin-bottom:0;">
+    ${c.dvOk ? '✅' : '❌'} <div>
+      ${c.dvOk ? '' : '<b>Dígito verificador não confere</b> — provavelmente falta ou sobra um número. Confira antes de registrar.<br>'}
+      <b>NF ${c.nNF}</b> · série ${c.serie} · ${c.mes}/${c.ano} · UF do emitente: ${c.uf}<br>
+      CNPJ do fornecedor: ${c.cnpj}${c.fornecedor ? ' — <b>' + c.fornecedor + '</b>' : ' <i>(fornecedor ainda não conhecido)</i>'}
+      ${jaTem ? '<br>⚠️ Esta nota já parece estar na matriz.' : ''}
+    </div></div>`;
+}
+function registrarChave() {
+  const d = inputChave.value.replace(/\D/g, '');
+  if (d.length !== 44) return alert('A chave precisa ter 44 dígitos. Faltam ' + (44 - d.length) + '.');
+  const c = lerChave(d);
+  if (!c.dvOk && !confirm('O dígito verificador não confere — a chave pode estar digitada errada.\n\nRegistrar mesmo assim?')) return;
+  if (pendentes.some(p => p.chave === d)) return alert('Esta chave já está na lista de pendentes.');
+  let fornecedor = c.fornecedor;
+  if (!fornecedor) fornecedor = (prompt('Nome do fornecedor desta nota (opcional):') || '').trim() || 'Fornecedor a identificar';
+  pendentes.push({ chave:d, fornecedor, nNF:c.nNF, serie:c.serie, cnpj:c.cnpj, uf:c.uf, mes:c.mes, ano:c.ano, registrado:new Date().toLocaleDateString('pt-BR') });
+  salvarLocal();
+  inputChave.value = '';
+  document.getElementById('chave-conta').textContent = '0 de 44 dígitos';
+  document.getElementById('chave-leitura').innerHTML = '';
+  renderPendentes();
+}
+function abrirPortalChave() {
+  const d = inputChave.value.replace(/\D/g, '');
+  if (d.length === 44) navigator.clipboard.writeText(d).catch(() => {});
+  window.open('https://www.nfe.fazenda.gov.br/portal/consultaRecaptcha.aspx?tipoConsulta=completa&tipoConteudo=XbSeqxE8pl8=', '_blank', 'noopener');
+}
+function toggleColarXML() {
+  const a = document.getElementById('area-colar');
+  a.style.display = a.style.display === 'none' ? 'block' : 'none';
+}
+function lerXMLColado() {
+  const txt = document.getElementById('xml-texto').value.trim();
+  if (!txt) return alert('Cole o conteúdo do XML no campo antes.');
+  if (txt.indexOf('<') < 0) return alert('Isso não parece um XML. Abra o arquivo .xml em um editor de texto, copie tudo e cole aqui.');
+  pendingItems = parseNFe(txt, 'colado');
+  if (!pendingItems.length) return alert('Não consegui ler itens nesse XML.');
+  document.getElementById('xml-texto').value = '';
+  document.getElementById('area-colar').style.display = 'none';
+  mostrarPreview();
+}
+function renderPendentes() {
+  const el = document.getElementById('pendentes-area');
+  if (!pendentes.length) { el.innerHTML = ''; return; }
+  el.innerHTML = `<div class="card-title" style="margin-bottom:8px;">Notas pendentes — aguardando o XML (${pendentes.length})</div>` +
+    pendentes.map((p, i) => `<div class="pend-item">
+      <span>📌 <b>NF ${p.nNF}</b> · ${p.fornecedor} · ${p.mes}/${p.ano} · ${p.uf}</span>
+      <span class="pend-chave">${p.chave}</span>
+      <button class="btn btn-ghost btn-sm" onclick="copiarChave(${i})">📋 Copiar chave</button>
+      <button class="btn btn-danger btn-sm" onclick="removerPendente(${i})">Remover</button>
+    </div>`).join('') +
+    `<div class="alert alert-info" style="margin-top:8px;font-size:.76rem;">
+      A Receita só entrega o XML com certificado digital e manifestação do destinatário, então o download automático não roda aqui.
+      O caminho rápido continua sendo pedir o XML ao fornecedor pelo WhatsApp. Quando ele chegar, importe o arquivo e a pendência some sozinha.
+    </div>`;
+}
+function copiarChave(i) { navigator.clipboard.writeText(pendentes[i].chave).then(() => alert('Chave copiada.')); }
+function removerPendente(i) { pendentes.splice(i, 1); salvarLocal(); renderPendentes(); }
+
+// ═══════════════════════════════════════════════════════════
+// LEITURA DO XML
 // ═══════════════════════════════════════════════════════════
 const dz = document.getElementById('drop-zone');
 dz.addEventListener('dragover',  e => { e.preventDefault(); dz.classList.add('drag-over'); });
@@ -687,9 +927,6 @@ dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
 dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag-over'); handleFiles(e.dataTransfer.files); });
 document.getElementById('xml-input').addEventListener('change', e => handleFiles(e.target.files));
 
-// ═══════════════════════════════════════════════════════════
-// PARSE XML
-// ═══════════════════════════════════════════════════════════
 function handleFiles(files) {
   pendingItems = [];
   let count = files.length, done = 0;
@@ -705,58 +942,88 @@ function handleFiles(files) {
 }
 
 function parseNFe(xml, filename) {
-  const parser = new DOMParser();
-  const doc    = parser.parseFromString(xml, 'application/xml');
-  const ns     = 'http://www.portalfiscal.inf.br/nfe';
-
+  const doc = new DOMParser().parseFromString(xml, 'application/xml');
+  const ns  = 'http://www.portalfiscal.inf.br/nfe';
   function g(parent, tag) {
     let el = parent.getElementsByTagNameNS(ns, tag)[0];
     if (!el) el = parent.getElementsByTagName(tag)[0];
     return el ? el.textContent.trim() : '';
   }
-
   const emit   = doc.querySelector('emit') || doc;
   const fornec = g(emit,'xNome') || 'Fornecedor não identificado';
   const cnpj   = g(emit,'CNPJ') || '';
   const dhEmi  = g(doc,'dhEmi') || g(doc,'dEmi') || '';
-  const nNF    = g(doc,'nNF')   || '';
+  const nNF    = g(doc,'nNF') || '';
   const dataNF = dhEmi ? dhEmi.substring(0,10).split('-').reverse().join('/') : '';
+  const infEl  = doc.querySelector('infNFe');
+  const chaveNF = infEl ? (infEl.getAttribute('Id') || '').replace(/\D/g,'') : '';
+  const notaId  = chaveNF.length === 44 ? chaveNF : (cnpj || 's-cnpj') + '-' + (nNF || 's-nf');
 
-  const allDets = Array.from(doc.querySelectorAll('det').length
-    ? doc.querySelectorAll('det')
-    : doc.getElementsByTagName('det'));
-
-  if (!allDets.length) return [{
-    fornecedor:fornec, cnpj, produto:'Produto não lido', un:'UN',
-    qtde:1, precoNF:0, ipi:0, frete:0, custoUnit:0,
-    temST:false, vICMSST:0, pICMSST:0, stPorUnidade:0, vFCP:0,
-    csosn:'', cst:'', dataNF, nNF, arquivo:filename
-  }];
+  const dets = Array.from(doc.querySelectorAll('det').length ? doc.querySelectorAll('det') : doc.getElementsByTagName('det'));
+  if (!dets.length) return [];
 
   const CSOSN_ST = ['201','202','203','500','900'];
   const CST_ST   = ['10','30','60','70','90'];
 
-  return allDets.map(det => {
-    const prod   = g(det,'xProd');
-    const un     = g(det,'uCom');
-    const qtde   = parseFloat(g(det,'qCom').replace(',','.'))   || 1;
-    const vUnCom = parseFloat(g(det,'vUnCom').replace(',','.')) || 0;
-    const vIPI   = parseFloat(g(det,'vIPI').replace(',','.'))   || 0;
-    const pIPI   = parseFloat(g(det,'pIPI').replace(',','.'))   || 0;
-    const csosn  = g(det,'CSOSN');
-    const cst    = g(det,'CST');
-    const vICMSST  = parseFloat(g(det,'vICMSST').replace(',','.'))  || 0;
-    const pICMSST  = parseFloat(g(det,'pICMSST').replace(',','.'))  || 0;
-    const vFCP     = parseFloat(g(det,'vFCPST').replace(',','.'))   || 0;
-    const temST    = CSOSN_ST.includes(csosn) || CST_ST.includes(cst) || vICMSST > 0;
-    const stUnit   = temST && qtde > 0 ? (vICMSST + vFCP) / qtde : 0;
-    const ipiUnit  = qtde > 0 ? vIPI / qtde : 0;
+  return dets.map(det => {
+    const produto = g(det,'xProd');
+    const un      = g(det,'uCom');
+    const cProd   = g(det,'cProd');
+    const ncm     = g(det,'NCM');
+    const cean    = g(det,'cEAN');
+    const qtde    = parseFloat(g(det,'qCom').replace(',','.'))   || 1;
+    const vUnCom  = parseFloat(g(det,'vUnCom').replace(',','.')) || 0;
+    const vIPI    = parseFloat(g(det,'vIPI').replace(',','.'))   || 0;
+    const pIPI    = parseFloat(g(det,'pIPI').replace(',','.'))   || 0;
+    const csosn   = g(det,'CSOSN');
+    const cst     = g(det,'CST');
+    const vICMSST = parseFloat(g(det,'vICMSST').replace(',','.'))|| 0;
+    const pICMSST = parseFloat(g(det,'pICMSST').replace(',','.'))|| 0;
+    const vFCP    = parseFloat(g(det,'vFCPST').replace(',','.')) || 0;
+    const temST   = CSOSN_ST.includes(csosn) || CST_ST.includes(cst) || vICMSST > 0;
+    const stUnit  = temST && qtde > 0 ? (vICMSST + vFCP) / qtde : 0;
+    const ipiUnit = qtde > 0 ? vIPI / qtde : 0;
     const custoUnit = vUnCom + ipiUnit + stUnit;
-    return { fornecedor:fornec, cnpj, produto:prod, un, qtde,
-      precoNF:vUnCom, ipi:pIPI, frete:0,
-      vICMSST, pICMSST, vFCP, csosn, cst, temST,
-      stPorUnidade:stUnit, custoUnit, dataNF, nNF, arquivo:filename };
+
+    const it = { fornecedor:fornec, cnpj, produto, un, cProd, ncm, cean, qtde,
+      precoNF:vUnCom, ipi:pIPI, vIPI, vICMSST, pICMSST, vFCP, csosn, cst, temST,
+      stPorUnidade:stUnit, custoUnit, dataNF, nNF, chaveNF, notaId, arquivo:filename };
+
+    const salva = estruturas[chaveEstrutura(it)];
+    if (salva) { it.pctEmbal = salva.pctEmbal; it.unPct = salva.unPct; it.origemEstr = 'salva'; }
+    else { const s = sugerirEstrutura(produto, un); it.pctEmbal = s.pctEmbal; it.unPct = s.unPct; it.origemEstr = 'sugerida'; }
+    return it;
   });
+}
+
+// ── Sugestão de estrutura de embalagem ──
+function limparDimensoes(desc) {
+  let s = ' ' + (desc || '').toUpperCase() + ' ';
+  s = s.replace(/\d+[,.]\d+\s*[Xx]\s*\d+[,.]?\d*\s*(CM|MM)?/g, ' ');
+  s = s.replace(/\d+\s*[Xx]\s*\d+\s*(CM|MM)/g, ' ');
+  s = s.replace(/\d+\s*(CM|MM|ML|LT|LTS|KG|GR|G)\b/g, ' ');
+  s = s.replace(/[ØΦ]\s*\d+/g, ' ');
+  s = s.replace(/N[ºO°]?\s*\d+/g, ' ');
+  return s;
+}
+function sugerirEstrutura(desc, un) {
+  const u = (un || '').toUpperCase().trim();
+  const s = limparDimensoes(desc);
+  let pctEmbal = 1, unPct = 1;
+
+  const pares = [...s.matchAll(/(\d{1,4})\s*[Xx]\s*(\d{1,4})/g)];
+  if (pares.length) {
+    const m = pares[pares.length - 1];
+    pctEmbal = parseInt(m[1]); unPct = parseInt(m[2]);
+  } else {
+    const m = s.match(/(?:C\/|COM|CX|PCT|PCTE|PC|FD|DP|DISPLAY|EMB|LEV)\s*(\d{1,4})\b/);
+    if (m) unPct = parseInt(m[1]);
+  }
+  if (u === 'MIL' && pctEmbal * unPct < 1000) { pctEmbal = 1; unPct = 1000; }
+  if (['UN','UND','UNID','KG','PC','PÇ','PCT'].includes(u) && pares.length === 0 && unPct === 1) { pctEmbal = 1; unPct = 1; }
+  if (pctEmbal < 1 || pctEmbal > 5000) pctEmbal = 1;
+  if (unPct    < 1 || unPct    > 5000) unPct    = 1;
+  return { pctEmbal, unPct };
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -765,44 +1032,64 @@ function parseNFe(xml, filename) {
 function mostrarPreview() {
   if (!pendingItems.length) return;
   document.getElementById('preview-area').style.display = 'block';
-  let html = `<div class="table-outer"><table>
-    <thead><tr>
-      <th>Fornecedor</th><th>Produto</th><th>UN</th>
-      <th>Qtde/Embal.</th><th>Preço Unit. NF</th>
-      <th>IPI%</th><th class="th-st">ST?</th>
-      <th class="th-st">ICMS-ST Unit.</th>
-      <th>Custo Unit. Real</th>
-      <th>Data NF</th><th>Nº NF</th>
-    </tr></thead><tbody>`;
-  pendingItems.forEach((it,i) => {
-    const stTag = it.temST
-      ? `<span class="tag-st">🔶 ST</span>`
-      : `<span class="tag-normal">✅ Normal</span>`;
-    html += `<tr>
-      <td class="left">${it.fornecedor}</td>
-      <td class="left">${it.produto}</td>
-      <td>${it.un}</td>
-      <td><input class="ef" id="q_${i}" value="${it.qtde}" onchange="recalcPrev(${i})"></td>
-      <td>R$ ${it.precoNF.toFixed(4)}</td>
-      <td>${it.ipi.toFixed(1)}</td>
-      <td class="td-st">${stTag}</td>
-      <td class="td-st">${it.temST ? 'R$ '+it.stPorUnidade.toFixed(4) : '—'}</td>
-      <td id="cu_${i}" style="font-weight:700;color:var(--azul)">R$ ${it.custoUnit.toFixed(4)}</td>
-      <td>${it.dataNF}</td><td>${it.nNF}</td>
-    </tr>`;
+
+  const notas = {};
+  pendingItems.forEach((it, i) => { (notas[it.notaId] = notas[it.notaId] || []).push(i); });
+
+  let html = '';
+  Object.entries(notas).forEach(([notaId, idxs]) => {
+    const it0 = pendingItems[idxs[0]];
+    html += `<div class="alert alert-info" style="margin-top:12px;">
+      🧾 <b>${it0.fornecedor}</b> · NF ${it0.nNF || '—'} · ${it0.dataNF || '—'} · ${idxs.length} item(s)</div>
+      <div class="table-outer"><table style="min-width:1050px"><thead><tr>
+        <th style="width:280px">Produto</th><th style="width:60px">UN</th><th style="width:70px">Qtde</th>
+        <th style="width:100px">Preço NF</th><th class="th-st" style="width:60px">ST?</th>
+        <th class="th-st" style="width:100px">ICMS-ST Un.</th><th style="width:110px">Custo Embal.</th>
+        <th class="th-desm" style="width:90px">Pct/Embal.</th><th class="th-desm" style="width:90px">Un/Pacote</th>
+        <th class="th-desm" style="width:90px">Total Un.</th><th class="th-desm" style="width:100px">Custo/Unid.</th>
+        <th style="width:80px">Origem</th>
+      </tr></thead><tbody>`;
+    idxs.forEach(i => {
+      const it = pendingItems[i];
+      const tot = it.qtde * it.pctEmbal * it.unPct;
+      const cu  = it.custoUnit / (it.pctEmbal * it.unPct);
+      html += `<tr>
+        <td class="left" title="${it.produto}">${it.produto}</td>
+        <td>${it.un}</td>
+        <td><input class="ef" value="${it.qtde}" onchange="recalcPrev(${i},'qtde',this.value)"></td>
+        <td>R$&nbsp;${it.precoNF.toFixed(4)}</td>
+        <td class="td-st">${it.temST ? '<span class="tag-st">🔶</span>' : '<span class="tag-normal">✅</span>'}</td>
+        <td class="td-st">${it.temST ? 'R$&nbsp;' + it.stPorUnidade.toFixed(4) : '—'}</td>
+        <td id="pcu_${i}" style="font-weight:700;color:var(--azul)">R$&nbsp;${it.custoUnit.toFixed(4)}</td>
+        <td class="td-desm"><input class="ef ef-estr" value="${it.pctEmbal}" onchange="recalcPrev(${i},'pctEmbal',this.value)"></td>
+        <td class="td-desm"><input class="ef ef-estr" value="${it.unPct}" onchange="recalcPrev(${i},'unPct',this.value)"></td>
+        <td class="td-desm" id="ptot_${i}"><b>${tot}</b></td>
+        <td class="td-desm" id="pcun_${i}">R$&nbsp;${cu.toFixed(4)}</td>
+        <td id="porg_${i}">${it.origemEstr === 'salva' ? '<span class="tag-salva">salva</span>' : '<span class="tag-sugerida">sugerida</span>'}</td>
+      </tr>`;
+    });
+    html += '</tbody></table></div>';
   });
-  html += '</tbody></table></div>';
   document.getElementById('preview-content').innerHTML = html;
 }
 
-function recalcPrev(i) {
-  const qtde = parseFloat(document.getElementById('q_'+i).value) || 1;
-  pendingItems[i].qtde = qtde;
-  const st  = pendingItems[i].temST ? (pendingItems[i].vICMSST + pendingItems[i].vFCP) / qtde : 0;
-  const ipi = pendingItems[i].vIPI  ? pendingItems[i].vIPI / qtde : 0;
-  const cu  = pendingItems[i].precoNF + ipi + st;
-  pendingItems[i].custoUnit = cu; pendingItems[i].stPorUnidade = st;
-  document.getElementById('cu_'+i).textContent = 'R$ ' + cu.toFixed(4);
+function recalcPrev(i, campo, val) {
+  const it = pendingItems[i];
+  if (campo === 'qtde')     it.qtde     = parseFloat(String(val).replace(',','.')) || 1;
+  if (campo === 'pctEmbal') it.pctEmbal = Math.max(1, parseInt(val) || 1);
+  if (campo === 'unPct')    it.unPct    = Math.max(1, parseInt(val) || 1);
+  if (campo === 'pctEmbal' || campo === 'unPct') it.origemEstr = 'confirmada';
+
+  const st  = it.temST ? (it.vICMSST + it.vFCP) / it.qtde : 0;
+  const ipi = it.vIPI ? it.vIPI / it.qtde : 0;
+  it.stPorUnidade = st;
+  it.custoUnit    = it.precoNF + ipi + st;
+
+  const tot = it.qtde * it.pctEmbal * it.unPct;
+  document.getElementById('pcu_'  + i).innerHTML = 'R$&nbsp;' + it.custoUnit.toFixed(4);
+  document.getElementById('ptot_' + i).innerHTML = '<b>' + tot + '</b>';
+  document.getElementById('pcun_' + i).innerHTML = 'R$&nbsp;' + (it.custoUnit / (it.pctEmbal * it.unPct)).toFixed(4);
+  document.getElementById('porg_' + i).innerHTML = '<span class="tag-salva">confirmada</span>';
 }
 
 function limparPreview() {
@@ -812,235 +1099,402 @@ function limparPreview() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// SALVAR
+// SALVAR NA MATRIZ
 // ═══════════════════════════════════════════════════════════
 async function salvarNaMatriz() {
   if (!pendingItems.length) return;
   if (!scriptURL) {
     document.getElementById('sync-warn-import').innerHTML =
-      `<div class="alert alert-warn">⚠️ Sincronização não configurada. Os dados serão salvos apenas neste dispositivo. <button class="btn btn-primary btn-sm" onclick="abrirConfig()" style="margin-left:8px">Configurar agora</button></div>`;
+      `<div class="alert alert-warn">⚠️ Sincronização não configurada. Os dados ficam salvos só neste dispositivo. <button class="btn btn-primary btn-sm" onclick="abrirConfig()" style="margin-left:8px">Configurar agora</button></div>`;
   }
   pendingItems.forEach(it => {
-    matrizData.push({
-      fornecedor:it.fornecedor, cnpj:it.cnpj, produto:it.produto,
+    estruturas[chaveEstrutura(it)] = { pctEmbal: it.pctEmbal, unPct: it.unPct, produto: it.produto };
+    matrizData.push(migrarLinha({
+      fornecedor:it.fornecedor, cnpj:it.cnpj, produto:it.produto, cProd:it.cProd, ncm:it.ncm, cean:it.cean,
       un:it.un, qtde:it.qtde, precoNF:it.precoNF, ipi:it.ipi, frete:0,
       temST:it.temST, vICMSST:it.vICMSST, pICMSST:it.pICMSST,
       stPorUnidade:it.stPorUnidade, custoUnit:it.custoUnit,
       reajuste:0, novoPreco:it.custoUnit, variacao:0,
-      dataNF:it.dataNF, nNF:it.nNF, status:'✅ OK',
+      dataNF:it.dataNF, nNF:it.nNF, chaveNF:it.chaveNF, notaId:it.notaId, status:'✅ OK',
       markup:0, precoVenda:0, csosn:it.csosn,
-      unEmbal: 1,
+      pctEmbal:it.pctEmbal, unPct:it.unPct,
       timestamp:new Date().toISOString()
-    });
+    }));
   });
+
+  const chavesImportadas = new Set(pendingItems.map(i => i.chaveNF).filter(Boolean));
+  const nfsImportadas    = new Set(pendingItems.map(i => String(i.nNF)).filter(Boolean));
+  pendentes = pendentes.filter(p => !chavesImportadas.has(p.chave) && !nfsImportadas.has(String(p.nNF)));
+
   historicoLog.push({
     data:new Date().toLocaleDateString('pt-BR'),
     hora:new Date().toLocaleTimeString('pt-BR'),
     qtdeItens:pendingItems.length,
-    fornecs:[...new Set(pendingItems.map(i=>i.fornecedor))].join(', '),
-    nfs:[...new Set(pendingItems.map(i=>i.nNF).filter(Boolean))].join(', ')
+    fornecs:[...new Set(pendingItems.map(i => i.fornecedor))].join(', '),
+    nfs:[...new Set(pendingItems.map(i => i.nNF).filter(Boolean))].join(', ')
   });
-  localStorage.setItem('ls_matriz',    JSON.stringify(matrizData));
-  localStorage.setItem('ls_historico', JSON.stringify(historicoLog));
+
+  salvarLocal();
   atualizarStats();
   const qtde = pendingItems.length;
+  const primeiraNota = pendingItems[0].notaId;
   pendingItems = [];
   limparPreview();
-  document.getElementById('sync-warn-import').innerHTML =
-    `<div class="alert alert-success">✅ ${qtde} itens salvos!</div>`;
+  renderPendentes();
+  document.getElementById('sync-warn-import').innerHTML = `<div class="alert alert-success">✅ ${qtde} itens salvos.</div>`;
   if (scriptURL) await salvarNoSheets();
-  setTimeout(() => switchTab('matriz'), 1200);
+  filtro.nota = primeiraNota; filtro.fornec = '';
+  setTimeout(() => switchTab('matriz'), 900);
 }
 
 // ═══════════════════════════════════════════════════════════
-// RENDER MATRIZ — colunas dinâmicas
+// FILTROS DA MATRIZ
+// ═══════════════════════════════════════════════════════════
+let filtro = { busca:'', fornec:'', nota:'', de:'', ate:'', agrupar:false };
+
+function setFiltro(campo, val) {
+  filtro[campo] = campo === 'agrupar' ? !!val : val;
+  if (campo === 'fornec') filtro.nota = '';
+  renderMatriz();
+}
+function limparFiltros() {
+  filtro = { busca:'', fornec:'', nota:'', de:'', ate:'', agrupar:filtro.agrupar };
+  ['f-busca','f-fornec','f-nota','f-de','f-ate'].forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; });
+  renderMatriz();
+}
+function rotuloNota(r) {
+  return 'NF ' + (r.nNF || '—') + ' · ' + (r.dataNF || 's/ data');
+}
+function linhasFiltradas() {
+  const de  = isoParaDate(filtro.de);
+  const ate = isoParaDate(filtro.ate);
+  const q   = filtro.busca.trim().toLowerCase();
+  return matrizData.map((r, i) => ({ r, i })).filter(({ r }) => {
+    if (filtro.fornec && r.fornecedor !== filtro.fornec) return false;
+    if (filtro.nota   && String(r.notaId) !== String(filtro.nota)) return false;
+    if (q) {
+      const alvo = (r.produto + ' ' + r.fornecedor + ' ' + r.nNF).toLowerCase();
+      if (alvo.indexOf(q) < 0) return false;
+    }
+    if (de || ate) {
+      const d = dataBRparaDate(r.dataNF);
+      if (!d) return false;
+      if (de  && d < de)  return false;
+      if (ate && d > ate) return false;
+    }
+    return true;
+  });
+}
+function preencherSelectsFiltro() {
+  const selF = document.getElementById('f-fornec');
+  const selN = document.getElementById('f-nota');
+  if (!selF || !selN) return;
+
+  const fornecs = [...new Set(matrizData.map(r => r.fornecedor))].sort((a,b) => a.localeCompare(b,'pt-BR'));
+  selF.innerHTML = '<option value="">Todos os fornecedores</option>' +
+    fornecs.map(f => `<option value="${f.replace(/"/g,'&quot;')}"${filtro.fornec === f ? ' selected' : ''}>${f}</option>`).join('');
+
+  const base = filtro.fornec ? matrizData.filter(r => r.fornecedor === filtro.fornec) : matrizData;
+  const notas = {};
+  base.forEach(r => { const k = String(r.notaId); (notas[k] = notas[k] || { r, n:0 }).n++; });
+  const lista = Object.entries(notas).sort((a,b) => (dataBRparaDate(b[1].r.dataNF) || 0) - (dataBRparaDate(a[1].r.dataNF) || 0));
+  selN.innerHTML = '<option value="">Todas as notas</option>' +
+    lista.map(([k, v]) => `<option value="${k}"${String(filtro.nota) === k ? ' selected' : ''}>${rotuloNota(v.r)} (${v.n} itens)${filtro.fornec ? '' : ' — ' + v.r.fornecedor}</option>`).join('');
+
+  document.getElementById('f-busca').value = filtro.busca;
+  document.getElementById('f-de').value    = filtro.de;
+  document.getElementById('f-ate').value   = filtro.ate;
+  document.getElementById('f-agrupar').checked = filtro.agrupar;
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER MATRIZ
 // ═══════════════════════════════════════════════════════════
 function renderMatriz() {
+  preencherSelectsFiltro();
+
   const tbody = document.getElementById('matriz-body');
   const cols  = getColOrder().filter(c => c.visivel);
+  const linhas = linhasFiltradas();
 
-  // Rebuild thead
-  const thead = document.querySelector('#tabela-matriz thead tr');
-  if (thead) {
-    thead.innerHTML = cols.map(c => {
-      const thCls = c.id==='st'||c.id==='stUnit' ? 'th-st'
-                  : (c.id==='markup'||c.id==='vEmbal'||c.id==='vUnid') ? 'th-venda'
-                  : (c.id==='unEmbal'||c.id==='totUnid'||c.id==='cUnid') ? 'th-desm'
-                  : c.id==='produto' ? 'th-frozen'
-                  : '';
-      return `<th class="${thCls}">${c.label}</th>`;
-    }).join('');
+  // colgroup + thead
+  const cg = document.getElementById('matriz-colgroup');
+  cg.innerHTML = cols.map(c => `<col id="col-${c.id}" style="width:${larguraCol(c.id)}px">`).join('');
+  const larguraTotal = cols.reduce((s2, c) => s2 + larguraCol(c.id), 0);
+  const tabela = document.getElementById('tabela-matriz');
+  tabela.style.width = larguraTotal + 'px';
+
+  let offsetFixa = null;
+  const idxFixa = cols.findIndex(c => c.id === colunaFixa);
+  if (idxFixa >= 0 && idxFixa <= 3) {
+    offsetFixa = 0;
+    for (let k = 0; k < idxFixa; k++) offsetFixa += larguraCol(cols[k].id);
   }
 
-  if (!matrizData.length) {
-    tbody.innerHTML = `<tr><td colspan="${cols.length}" class="empty">Nenhum dado. Importe um XML ou clique em Atualizar.</td></tr>`;
+  const thead = document.querySelector('#tabela-matriz thead tr');
+  thead.innerHTML = cols.map(c => {
+    const grupo = COL_ST.includes(c.id) ? 'th-st'
+                : COL_VENDA.includes(c.id) ? 'th-venda'
+                : COL_DESM.includes(c.id) ? 'th-desm' : '';
+    const ehFixa = (offsetFixa !== null && c.id === colunaFixa);
+    const colap  = larguraCol(c.id) <= 14 ? ' col-colapsada' : '';
+    const classe = (grupo + colap + (ehFixa ? ' th-frozen' : '')).trim();
+    const estilo = ehFixa ? `left:${offsetFixa}px` : '';
+    return `<th class="${classe}" style="${estilo}" data-col="${c.id}"
+        draggable="true"
+        ondragstart="thDragStart(event,'${c.id}')"
+        ondragover="thDragOver(event)"
+        ondragleave="thDragLeave(event)"
+        ondrop="thDrop(event,'${c.id}')"
+        ondragend="thDragEnd(event)"
+        title="${c.label || c.id} — arraste para trocar de lugar">
+      <span class="th-label">${c.label}</span>
+      <span class="th-resizer" draggable="false"
+            onpointerdown="iniciarResize(event,'${c.id}')"
+            ondblclick="alternarColapso('${c.id}')"></span>
+    </th>`;
+  }).join('');
+
+  // aviso de filtro
+  const alertEl = document.getElementById('matriz-alert');
+  const ativos = [];
+  if (filtro.fornec) ativos.push('Fornecedor: <b>' + filtro.fornec + '</b>');
+  if (filtro.nota) {
+    const r0 = matrizData.find(r => String(r.notaId) === String(filtro.nota));
+    ativos.push('Nota: <b>' + (r0 ? rotuloNota(r0) : filtro.nota) + '</b>');
+  }
+  if (filtro.busca) ativos.push('Busca: <b>' + filtro.busca + '</b>');
+  if (filtro.de || filtro.ate) ativos.push('Período: <b>' + (filtro.de || '…') + ' a ' + (filtro.ate || '…') + '</b>');
+  alertEl.innerHTML = ativos.length
+    ? `<div class="alert alert-warn">🔎 Mostrando <b>${linhas.length}</b> de ${matrizData.length} itens — ${ativos.join(' · ')}
+        <button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="limparFiltros()">Ver tudo</button></div>`
+    : `<div class="alert alert-success" style="font-size:.78rem">Mostrando todos os ${matrizData.length} itens. Use os filtros acima para abrir uma nota isolada.</div>`;
+
+  if (!linhas.length) {
+    tbody.innerHTML = `<tr><td colspan="${cols.length}" class="empty">${matrizData.length ? 'Nenhum item com esses filtros.' : 'Nenhum dado. Importe um XML ou clique em Atualizar.'}</td></tr>`;
     return;
   }
 
-  tbody.innerHTML = matrizData.map((r, i) => {
-    const novo       = r.custoUnit * (1 + (r.reajuste||0)/100);
-    const varVal     = novo - r.custoUnit;
-    const varCls     = varVal > 0 ? 'color:#c62828;font-weight:700' : varVal < 0 ? 'color:#2e7d32;font-weight:700' : '';
-    const markup     = r.markup || 0;
-    const base       = novo > 0 ? novo : r.custoUnit;
-    const pVendaEmb  = base * (1 + markup/100);
-    const unEmbal    = r.unEmbal || 1;
-    const totalUnid  = r.qtde * unEmbal;
-    const custoUnid  = unEmbal > 1 ? base / unEmbal : base;
-    const pVendaUnid = custoUnid * (1 + markup/100);
-    const stTag      = r.temST ? `<span class="tag-st">🔶 ST</span>` : `<span class="tag-normal">✅</span>`;
-
-    const cellMap = {
-      del:      `<td><button class="btn-del-row" onclick="deletarLinha(${i})" title="Deletar esta linha">🗑️</button></td>`,
-      num:      `<td>${i+1}</td>`,
-      fornec:   `<td class="left" style="max-width:130px;overflow:hidden;text-overflow:ellipsis" title="${r.fornecedor}">${r.fornecedor}</td>`,
-      produto:  `<td class="left td-frozen" style="width:var(--prod-col-w,150px);min-width:60px;max-width:400px;overflow:hidden;">
-                  <div class="prod-col-wrap">
-                    <span class="prod-text" onclick="abrirModalProduto(${i})" title="Clique para ver nome completo">${r.produto}</span>
-                    <span class="col-resizer" onmousedown="iniciarResizeColProduto(event)"></span>
-                  </div>
-                </td>`,
-      un:       `<td>${r.un}</td>`,
-      qtde:     `<td>${r.qtde}</td>`,
-      precoNF:  `<td>R$&nbsp;${(+r.precoNF).toFixed(4)}</td>`,
-      ipi:      `<td>${(+r.ipi).toFixed(1)}%</td>`,
-      st:       `<td class="td-st">${stTag}</td>`,
-      stUnit:   `<td class="td-st">${r.temST ? 'R$&nbsp;'+(+r.stPorUnidade).toFixed(4) : '—'}</td>`,
-      custo:    `<td><b>R$&nbsp;${(+r.custoUnit).toFixed(4)}</b></td>`,
-      unEmbal:  `<td class="td-desm"><input class="ef" style="border-color:#388e3c" value="${unEmbal}" onchange="atualizarUnEmbal(${i},this.value)" title="Unidades por embalagem"></td>`,
-      totUnid:  `<td class="td-desm"><b>${totalUnid}</b> un</td>`,
-      cUnid:    `<td class="td-desm">R$&nbsp;${custoUnid.toFixed(4)}</td>`,
-      reajuste: `<td><input class="ef" value="${r.reajuste||0}" onchange="atualizarReajuste(${i},this.value)">%</td>`,
-      novoPreco:`<td>R$&nbsp;${novo.toFixed(4)}</td>`,
-      variacao: `<td style="${varCls}">${varVal>=0?'+':''}R$&nbsp;${varVal.toFixed(4)}</td>`,
-      dataNF:   `<td>${r.dataNF}</td>`,
-      nNF:      `<td>${r.nNF}</td>`,
-      status:   `<td><span class="${varVal>0?'tag-alerta':'tag-ok'}">${varVal>0?'⚠️ Alta':'✅ OK'}</span></td>`,
-      markup:   `<td class="td-venda"><input class="ef ef-venda" value="${markup}" onchange="atualizarMarkup(${i},this.value)">%</td>`,
-      vEmbal:   `<td class="td-venda"><span class="preco-venda-val">R$&nbsp;${pVendaEmb.toFixed(2)}</span></td>`,
-      vUnid:    `<td class="td-venda"><span class="preco-venda-val" style="color:#4e342e">R$&nbsp;${pVendaUnid.toFixed(2)}</span></td>`,
-    };
-
-    return `<tr>${cols.map(c => cellMap[c.id] || '<td></td>').join('')}</tr>`;
-  }).join('');
+  let html = '', notaAtual = null, seq = 0;
+  linhas.forEach(({ r, i }) => {
+    if (filtro.agrupar && String(r.notaId) !== notaAtual) {
+      notaAtual = String(r.notaId);
+      html += `<tr class="linha-nota"><td colspan="${cols.length}">🧾 ${r.fornecedor} · ${rotuloNota(r)}</td></tr>`;
+    }
+    seq++;
+    html += `<tr>${cols.map(c => celula(c, r, i, seq, offsetFixa)).join('')}</tr>`;
+  });
+  tbody.innerHTML = html;
 }
 
-// ── Modal produto completo ──
+function celula(c, r, i, seq, offsetFixa) {
+  const pct   = Math.max(1, r.pctEmbal || 1);
+  const unp   = Math.max(1, r.unPct || 1);
+  const porEmb = pct * unp;
+  const novo  = r.custoUnit * (1 + (r.reajuste || 0) / 100);
+  const varVal = novo - r.custoUnit;
+  const varCls = varVal > 0 ? 'color:#c62828;font-weight:700' : varVal < 0 ? 'color:#2e7d32;font-weight:700' : '';
+  const markup = r.markup || 0;
+  const base   = novo > 0 ? novo : r.custoUnit;
+  const totalUnid = r.qtde * porEmb;
+  const custoPct  = base / pct;
+  const custoUnid = base / porEmb;
+
+  const map = {
+    del:      `<button class="btn-del-row" onclick="deletarLinha(${i})" title="Excluir este item">🗑️</button>`,
+    num:      seq,
+    fornec:   `<span title="${r.fornecedor}">${r.fornecedor}</span>`,
+    produto:  `<span onclick="abrirModalProduto(${i})" style="cursor:pointer" title="Clique para ver o nome completo">${r.produto}</span>`,
+    un:       r.un,
+    qtde:     r.qtde,
+    precoNF:  'R$&nbsp;' + (+r.precoNF).toFixed(4),
+    ipi:      (+r.ipi).toFixed(1) + '%',
+    st:       r.temST ? '<span class="tag-st">🔶 ST</span>' : '<span class="tag-normal">✅</span>',
+    stUnit:   r.temST ? 'R$&nbsp;' + (+r.stPorUnidade).toFixed(4) : '—',
+    custo:    '<b>R$&nbsp;' + (+r.custoUnit).toFixed(4) + '</b>',
+    pctEmbal: `<input class="ef ef-estr" value="${pct}" onchange="atualizarEstrutura(${i},'pctEmbal',this.value)" title="Pacotes ou displays dentro da embalagem da nota">`,
+    unPct:    `<input class="ef ef-estr" value="${unp}" onchange="atualizarEstrutura(${i},'unPct',this.value)" title="Unidades dentro de cada pacote">`,
+    totUnid:  '<b>' + totalUnid + '</b>',
+    cPacote:  'R$&nbsp;' + custoPct.toFixed(4),
+    cUnid:    'R$&nbsp;' + custoUnid.toFixed(4),
+    reajuste: `<input class="ef" value="${r.reajuste || 0}" onchange="atualizarReajuste(${i},this.value)">%`,
+    novoPreco:'R$&nbsp;' + novo.toFixed(4),
+    variacao: `<span style="${varCls}">${varVal >= 0 ? '+' : ''}R$&nbsp;${varVal.toFixed(4)}</span>`,
+    dataNF:   r.dataNF,
+    nNF:      `<span style="cursor:pointer;text-decoration:underline dotted" onclick="filtrarNota('${String(r.notaId).replace(/'/g,'')}')" title="Ver só os itens desta nota">${r.nNF}</span>`,
+    status:   `<span class="${varVal > 0 ? 'tag-alerta' : 'tag-ok'}">${varVal > 0 ? '⚠️ Alta' : '✅ OK'}</span>`,
+    markup:   `<input class="ef ef-venda" value="${markup}" onchange="atualizarMarkup(${i},this.value)">%`,
+    vEmbal:   `<span class="preco-venda-val">R$&nbsp;${(base * (1 + markup/100)).toFixed(2)}</span>`,
+    vPacote:  `<span class="preco-venda-val">R$&nbsp;${(custoPct * (1 + markup/100)).toFixed(2)}</span>`,
+    vUnid:    `<span class="preco-venda-val" style="color:#4e342e">R$&nbsp;${(custoUnid * (1 + markup/100)).toFixed(2)}</span>`,
+  };
+
+  let cls = c.cls || '';
+  let style = '';
+  if (offsetFixa !== null && c.id === colunaFixa) { cls += ' td-frozen'; style = `left:${offsetFixa}px;`; }
+  return `<td class="${cls}" style="${style}">${map[c.id] !== undefined ? map[c.id] : ''}</td>`;
+}
+
+function filtrarNota(notaId) { filtro.nota = notaId; renderMatriz(); }
+
 function abrirModalProduto(idx) {
-  const nome = matrizData[idx] ? matrizData[idx].produto : '';
-  document.getElementById('modal-produto-texto').textContent = nome;
+  const r = matrizData[idx];
+  if (!r) return;
+  document.getElementById('modal-produto-texto').textContent =
+    r.produto + (r.cProd ? '\n\nCódigo no fornecedor: ' + r.cProd : '') + (r.ncm ? '\nNCM: ' + r.ncm : '');
   document.getElementById('modal-produto').classList.add('open');
 }
-document.getElementById('modal-produto').addEventListener('click', e => {
-  if (e.target === e.currentTarget) e.currentTarget.classList.remove('open');
-});
+document.getElementById('modal-produto').addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('open'); });
 
-// ── Resize coluna Produto estilo Excel ──
-let _prodColW    = parseInt(localStorage.getItem('ls_prod_col_w') || '150');
-let _resizeActive = false;
-let _resizeStartX = 0;
+// ═══════════════════════════════════════════════════════════
+// REDIMENSIONAR / REORDENAR COLUNAS NA TABELA
+// ═══════════════════════════════════════════════════════════
+let redimensionando = false;
 
-// Aplica largura salva ao carregar
-document.documentElement.style.setProperty('--prod-col-w', _prodColW + 'px');
-
-function iniciarResizeColProduto(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  _resizeActive = true;
-  _resizeStartX = e.clientX;
-  e.target.classList.add('resizing');
-  document.body.style.cursor = 'col-resize';
+function iniciarResize(e, colId) {
+  e.preventDefault(); e.stopPropagation();
+  redimensionando = true;
+  const startX = e.clientX;
+  const startW = larguraCol(colId);
+  const alvo   = e.target;
+  alvo.classList.add('resizing');
   document.body.style.userSelect = 'none';
 
-  function onMove(ev) {
-    if (!_resizeActive) return;
-    const diff = ev.clientX - _resizeStartX;
-    _prodColW  = Math.max(60, Math.min(400, _prodColW + diff));
-    _resizeStartX = ev.clientX;
-    document.documentElement.style.setProperty('--prod-col-w', _prodColW + 'px');
-    document.querySelectorAll('td.td-frozen').forEach(td => { td.style.width = _prodColW + 'px'; });
+  function mover(ev) {
+    const w = Math.max(8, Math.min(700, startW + (ev.clientX - startX)));
+    colWidths[colId] = Math.round(w);
+    const col = document.getElementById('col-' + colId);
+    if (col) col.style.width = colWidths[colId] + 'px';
   }
-
-  function onUp(ev) {
-    _resizeActive = false;
-    document.body.style.cursor = '';
+  function soltar() {
+    redimensionando = false;
+    alvo.classList.remove('resizing');
     document.body.style.userSelect = '';
-    document.querySelectorAll('.col-resizer').forEach(r => r.classList.remove('resizing'));
-    localStorage.setItem('ls_prod_col_w', _prodColW);
-    document.removeEventListener('mousemove', onMove);
-    document.removeEventListener('mouseup',   onUp);
+    localStorage.setItem('ls_col_w', JSON.stringify(colWidths));
+    document.removeEventListener('pointermove', mover);
+    document.removeEventListener('pointerup', soltar);
+    renderMatriz();
   }
-
-  document.addEventListener('mousemove', onMove);
-  document.addEventListener('mouseup',   onUp);
+  document.addEventListener('pointermove', mover);
+  document.addEventListener('pointerup', soltar);
+}
+function alternarColapso(colId) {
+  const atual = larguraCol(colId);
+  const padrao = (COLUNAS_DEFAULT.find(c => c.id === colId) || {}).w || 100;
+  colWidths[colId] = atual <= 14 ? padrao : 10;
+  localStorage.setItem('ls_col_w', JSON.stringify(colWidths));
+  renderMatriz();
+}
+function resetarLarguras() {
+  colWidths = {};
+  localStorage.removeItem('ls_col_w');
+  renderMatriz();
 }
 
-// ── Arrastar tabela com mouse ──
-(function() {
-  const outer = document.querySelector('.table-outer');
+let thArrastada = null;
+function thDragStart(e, id) {
+  if (redimensionando) { e.preventDefault(); return; }
+  thArrastada = id;
+  e.currentTarget.classList.add('arrastando');
+  e.dataTransfer.effectAllowed = 'move';
+  try { e.dataTransfer.setData('text/plain', id); } catch (_) {}
+}
+function thDragOver(e)  { e.preventDefault(); e.currentTarget.classList.add('alvo-drop'); }
+function thDragLeave(e) { e.currentTarget.classList.remove('alvo-drop'); }
+function thDragEnd(e)   { document.querySelectorAll('#tabela-matriz th').forEach(t => t.classList.remove('arrastando','alvo-drop')); }
+function thDrop(e, alvoId) {
+  e.preventDefault();
+  document.querySelectorAll('#tabela-matriz th').forEach(t => t.classList.remove('arrastando','alvo-drop'));
+  if (!thArrastada || thArrastada === alvoId) return;
+  const si = colState.findIndex(c => c.id === thArrastada);
+  const ti = colState.findIndex(c => c.id === alvoId);
+  if (si < 0 || ti < 0) return;
+  const [movida] = colState.splice(si, 1);
+  colState.splice(ti, 0, movida);
+  localStorage.setItem('ls_colunas', JSON.stringify(colState));
+  thArrastada = null;
+  renderMatriz();
+}
+
+// arrastar a tabela para rolar (só no corpo, não no cabeçalho)
+(function () {
+  const outer = document.getElementById('matriz-outer');
   if (!outer) return;
-  let isDragging = false, startX = 0, scrollLeft = 0;
+  let arrastando = false, startX = 0, scrollLeft = 0;
   outer.addEventListener('mousedown', e => {
-    // não inicia drag em inputs, botões ou resizer
-    if (e.target.closest('input,button,.btn-del-row,.col-resizer,.prod-cell span')) return;
-    isDragging  = true;
-    startX      = e.pageX - outer.offsetLeft;
-    scrollLeft  = outer.scrollLeft;
+    if (e.target.closest('input,button,select,thead,.th-resizer')) return;
+    arrastando = true; startX = e.pageX - outer.offsetLeft; scrollLeft = outer.scrollLeft;
     outer.classList.add('grabbing');
   });
-  document.addEventListener('mouseup', () => {
-    isDragging = false;
-    outer.classList.remove('grabbing');
-  });
+  document.addEventListener('mouseup', () => { arrastando = false; outer.classList.remove('grabbing'); });
   outer.addEventListener('mousemove', e => {
-    if (!isDragging) return;
+    if (!arrastando) return;
     e.preventDefault();
-    const x    = e.pageX - outer.offsetLeft;
-    const walk = (x - startX) * 1.2;
-    outer.scrollLeft = scrollLeft - walk;
+    outer.scrollLeft = scrollLeft - ((e.pageX - outer.offsetLeft) - startX) * 1.2;
   });
-  // Touch support
-  let touchStartX = 0, touchScrollLeft = 0;
-  outer.addEventListener('touchstart', e => {
-    touchStartX    = e.touches[0].pageX;
-    touchScrollLeft = outer.scrollLeft;
-  }, { passive:true });
-  outer.addEventListener('touchmove', e => {
-    const dx = touchStartX - e.touches[0].pageX;
-    outer.scrollLeft = touchScrollLeft + dx;
-  }, { passive:true });
 })();
 
-// ── Deletar linha individual ──
+// ═══════════════════════════════════════════════════════════
+// EDIÇÕES NA MATRIZ
+// ═══════════════════════════════════════════════════════════
+async function atualizarEstrutura(i, campo, val) {
+  const r = matrizData[i];
+  r[campo] = Math.max(1, parseInt(val) || 1);
+  // memoriza para as próximas notas do mesmo produto
+  estruturas[chaveEstrutura(r)] = { pctEmbal: r.pctEmbal, unPct: r.unPct, produto: r.produto };
+  // aplica no mesmo produto do mesmo fornecedor em outras notas
+  const k = chaveEstrutura(r);
+  matrizData.forEach(o => { if (chaveEstrutura(o) === k) { o.pctEmbal = r.pctEmbal; o.unPct = r.unPct; } });
+  salvarLocal(); renderMatriz();
+  if (scriptURL) await salvarNoSheets();
+}
+async function atualizarReajuste(i, val) {
+  const r = matrizData[i];
+  r.reajuste  = parseFloat(String(val).replace(',','.')) || 0;
+  r.novoPreco = r.custoUnit * (1 + r.reajuste / 100);
+  r.variacao  = r.novoPreco - r.custoUnit;
+  r.status    = r.variacao > 0 ? '⚠️ Alta' : '✅ OK';
+  salvarLocal(); atualizarStats(); renderMatriz();
+  if (scriptURL) await salvarNoSheets();
+}
+async function atualizarMarkup(i, val) {
+  const r = matrizData[i];
+  r.markup = parseFloat(String(val).replace(',','.')) || 0;
+  const base = r.novoPreco > 0 ? r.novoPreco : r.custoUnit;
+  r.precoVenda = base * (1 + r.markup / 100);
+  salvarLocal(); renderMatriz();
+  if (scriptURL) await salvarNoSheets();
+}
 async function deletarLinha(i) {
   const r = matrizData[i];
-  if (!confirm(`Deletar "${r.produto}" (NF ${r.nNF || '—'}) do fornecedor "${r.fornecedor}"?`)) return;
+  if (!confirm(`Excluir "${r.produto}" (NF ${r.nNF || '—'}) de "${r.fornecedor}"?`)) return;
   matrizData.splice(i, 1);
-  localStorage.setItem('ls_matriz', JSON.stringify(matrizData));
-  atualizarStats();
-  renderMatriz();
+  salvarLocal(); atualizarStats(); renderMatriz();
+  if (scriptURL) await salvarNoSheets();
+}
+async function limparMatriz() {
+  if (!confirm('Apagar TODOS os dados da matriz? Isso afeta todos os dispositivos sincronizados.\n\nBaixe um backup antes se tiver dúvida.')) return;
+  matrizData = []; historicoLog = [];
+  salvarLocal(); atualizarStats(); renderMatriz();
   if (scriptURL) await salvarNoSheets();
 }
 
-// ── Modal organizar colunas ──
+// ═══════════════════════════════════════════════════════════
+// MODAL DE COLUNAS
+// ═══════════════════════════════════════════════════════════
 function abrirModalColunas() {
-  const lista  = document.getElementById('col-lista');
-  const cols   = getColOrder();
-  lista.innerHTML = cols.filter(c => !c.fixo || c.id==='num').map((c,i) => `
+  const lista = document.getElementById('col-lista');
+  lista.innerHTML = getColOrder().filter(c => !c.fixo).map(c => `
     <div class="col-item" draggable="true" data-id="${c.id}"
-         ondragstart="colDragStart(event)"
-         ondragover="colDragOver(event)"
-         ondrop="colDrop(event)"
-         ondragleave="colDragLeave(event)">
+         ondragstart="colDragStart(event)" ondragover="colDragOver(event)"
+         ondrop="colDrop(event)" ondragleave="colDragLeave(event)">
       <span class="col-drag-handle">☰</span>
-      <input type="checkbox" ${c.visivel?'checked':''} onchange="colToggle('${c.id}',this.checked)">
+      <input type="checkbox" ${c.visivel ? 'checked' : ''}>
       <span>${c.label || c.id}</span>
     </div>`).join('');
   document.getElementById('modal-colunas').classList.add('open');
 }
-document.getElementById('modal-colunas').addEventListener('click', e => {
-  if (e.target === e.currentTarget) e.currentTarget.classList.remove('open');
-});
+document.getElementById('modal-colunas').addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('open'); });
 
 let dragSrcId = null;
 function colDragStart(e) { dragSrcId = e.currentTarget.dataset.id; e.currentTarget.classList.add('dragging'); }
@@ -1049,289 +1503,277 @@ function colDragLeave(e) { e.currentTarget.classList.remove('drag-over-col'); }
 function colDrop(e) {
   e.preventDefault();
   e.currentTarget.classList.remove('drag-over-col');
-  const targetId = e.currentTarget.dataset.id;
-  if (!dragSrcId || dragSrcId === targetId) return;
-  const si = colState.findIndex(c=>c.id===dragSrcId);
-  const ti = colState.findIndex(c=>c.id===targetId);
-  if (si<0||ti<0) return;
-  const [moved] = colState.splice(si,1);
-  colState.splice(ti,0,moved);
+  const alvo = e.currentTarget.dataset.id;
+  if (!dragSrcId || dragSrcId === alvo) return;
+  lerCheckboxesColunas();
+  const si = colState.findIndex(c => c.id === dragSrcId);
+  const ti = colState.findIndex(c => c.id === alvo);
+  if (si < 0 || ti < 0) return;
+  const [m] = colState.splice(si, 1);
+  colState.splice(ti, 0, m);
   abrirModalColunas();
 }
-function colToggle(id, vis) {
-  const c = colState.find(c=>c.id===id);
-  if (c) c.visivel = vis;
+function lerCheckboxesColunas() {
+  document.querySelectorAll('#col-lista .col-item').forEach(el => {
+    const c = colState.find(c => c.id === el.dataset.id);
+    if (c) c.visivel = el.querySelector('input[type=checkbox]').checked;
+  });
 }
 function aplicarColunas() {
-  // lê checkboxes atuais do modal
-  document.querySelectorAll('#col-lista .col-item').forEach(el => {
-    const id  = el.dataset.id;
-    const vis = el.querySelector('input[type=checkbox]').checked;
-    const c   = colState.find(c=>c.id===id);
-    if (c) c.visivel = vis;
-  });
+  lerCheckboxesColunas();
   localStorage.setItem('ls_colunas', JSON.stringify(colState));
   document.getElementById('modal-colunas').classList.remove('open');
   renderMatriz();
 }
 function resetarColunas() {
   colState = COLUNAS_DEFAULT.map(c => ({ id:c.id, visivel:true }));
+  colWidths = {};
   localStorage.removeItem('ls_colunas');
+  localStorage.removeItem('ls_col_w');
   document.getElementById('modal-colunas').classList.remove('open');
   renderMatriz();
 }
 
-async function atualizarUnEmbal(i, val) {
-  matrizData[i].unEmbal = parseInt(val) || 1;
-  localStorage.setItem('ls_matriz', JSON.stringify(matrizData));
-  renderMatriz();
-  if (scriptURL) await salvarNoSheets();
-}
-
-async function atualizarReajuste(i, val) {
-  matrizData[i].reajuste  = parseFloat(val)||0;
-  matrizData[i].novoPreco = matrizData[i].custoUnit*(1+matrizData[i].reajuste/100);
-  matrizData[i].variacao  = matrizData[i].novoPreco - matrizData[i].custoUnit;
-  matrizData[i].status    = matrizData[i].variacao>0?'⚠️ Alta':'✅ OK';
-  localStorage.setItem('ls_matriz',JSON.stringify(matrizData));
-  atualizarStats(); renderMatriz();
-  if (scriptURL) await salvarNoSheets();
-}
-
-async function atualizarMarkup(i, val) {
-  matrizData[i].markup    = parseFloat(val)||0;
-  const base = matrizData[i].novoPreco>0?matrizData[i].novoPreco:matrizData[i].custoUnit;
-  matrizData[i].precoVenda = base*(1+matrizData[i].markup/100);
-  localStorage.setItem('ls_matriz',JSON.stringify(matrizData));
-  renderMatriz();
-  if (scriptURL) await salvarNoSheets();
-}
-
-async function limparMatriz() {
-  if (!confirm('Apagar todos os dados? Isso afeta todos os dispositivos.')) return;
-  matrizData=[]; historicoLog=[];
-  localStorage.removeItem('ls_matriz'); localStorage.removeItem('ls_historico');
-  atualizarStats(); renderMatriz();
-  if (scriptURL) await salvarNoSheets();
-}
-
 // ═══════════════════════════════════════════════════════════
-// RENDER FORNECEDORES
+// FORNECEDORES
 // ═══════════════════════════════════════════════════════════
-let _fornecOrdem = localStorage.getItem('ls_fornec_ordem') || 'original';
+let _fornecOrdem  = localStorage.getItem('ls_fornec_ordem') || 'alfa';
+let filtroFornec  = { busca:'', letra:'', de:'', ate:'' };
 
 function ordenarFornecedores(tipo) {
   _fornecOrdem = tipo;
   localStorage.setItem('ls_fornec_ordem', tipo);
   renderFornecedores();
 }
+function setFiltroFornec(campo, val) { filtroFornec[campo] = val; renderFornecedores(); }
+function filtrarLetra(l) { filtroFornec.letra = (filtroFornec.letra === l ? '' : l); renderFornecedores(); }
+function limparFiltrosFornec() {
+  filtroFornec = { busca:'', letra:'', de:'', ate:'' };
+  ['ff-busca','ff-de','ff-ate'].forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; });
+  renderFornecedores();
+}
 
 function renderFornecedores() {
   const grid = document.getElementById('fornec-grid');
-  if (!matrizData.length) { grid.innerHTML='<div class="empty">Nenhum fornecedor ainda.</div>'; return; }
+  const alfaEl = document.getElementById('alfabeto');
+  if (!matrizData.length) {
+    grid.innerHTML = '<div class="empty">Nenhum fornecedor ainda. Importe uma nota para começar.</div>';
+    alfaEl.innerHTML = '';
+    return;
+  }
 
-  // Agrupa com cópia profunda
-  const fornecs = {};
+  const de  = isoParaDate(filtroFornec.de);
+  const ate = isoParaDate(filtroFornec.ate);
+
+  // agrupa aplicando o filtro de período nos itens
+  const grupos = {};
   matrizData.forEach((r, idx) => {
-    const key = r.fornecedor;
-    if (!fornecs[key]) fornecs[key] = [];
-    fornecs[key].push({ ...r, _matrizIdx: idx });
+    if (de || ate) {
+      const d = dataBRparaDate(r.dataNF);
+      if (!d) return;
+      if (de && d < de) return;
+      if (ate && d > ate) return;
+    }
+    (grupos[r.fornecedor] = grupos[r.fornecedor] || []).push(Object.assign({}, r, { _matrizIdx: idx }));
   });
 
-  // Snapshot isolado
-  let snap = Object.entries(fornecs).map(([nome, itens]) => ({
-    nome,
-    itens: itens.map(i => ({ ...i })),
-    primeiraData: itens[0].timestamp || itens[0].dataNF || ''
+  // barra do alfabeto
+  const letrasComDados = new Set(Object.keys(grupos).map(n => (normalizarNome(n)[0] || '#')));
+  const letras = ['0-9', ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')];
+  alfaEl.innerHTML =
+    `<button class="alfa-btn ${filtroFornec.letra === '' ? 'active' : ''}" onclick="filtrarLetra('')">TODOS</button>` +
+    letras.map(l => {
+      const tem = l === '0-9' ? [...letrasComDados].some(x => /[0-9]/.test(x)) : letrasComDados.has(l);
+      return `<button class="alfa-btn ${filtroFornec.letra === l ? 'active' : ''} ${tem ? '' : 'vazia'}"
+        ${tem ? `onclick="filtrarLetra('${l}')"` : 'disabled'}>${l}</button>`;
+    }).join('');
+
+  let snap = Object.entries(grupos).map(([nome, itens]) => ({
+    nome, itens,
+    ultima: itens.reduce((acc, i) => {
+      const d = dataBRparaDate(i.dataNF);
+      return (d && (!acc || d > acc)) ? d : acc;
+    }, null)
   }));
 
-  // Ordenação
-  if (_fornecOrdem === 'alfa') {
-    snap.sort((a,b) => a.nome.localeCompare(b.nome, 'pt-BR'));
-  } else if (_fornecOrdem === 'data') {
-    snap.sort((a,b) => new Date(b.primeiraData) - new Date(a.primeiraData));
+  // filtros de texto e letra
+  const q = filtroFornec.busca.trim().toLowerCase();
+  if (q) snap = snap.filter(f => f.nome.toLowerCase().includes(q));
+  if (filtroFornec.letra) {
+    snap = snap.filter(f => {
+      const c = normalizarNome(f.nome)[0] || '#';
+      return filtroFornec.letra === '0-9' ? /[0-9]/.test(c) : c === filtroFornec.letra;
+    });
   }
+
+  if (_fornecOrdem === 'alfa') snap.sort((a,b) => a.nome.localeCompare(b.nome,'pt-BR'));
+  else snap.sort((a,b) => (b.ultima || 0) - (a.ultima || 0));
 
   window._fornecSnapshot = snap;
 
+  if (!snap.length) { grid.innerHTML = '<div class="empty">Nenhum fornecedor com esses filtros.</div>'; return; }
+
   grid.innerHTML = snap.map((f, idx) => {
     const { nome, itens } = f;
-    const ultData = itens[itens.length-1].dataNF;
+    const notas = {};
+    itens.forEach(i => { const k = String(i.notaId); (notas[k] = notas[k] || { r:i, n:0 }).n++; });
+    const listaNotas = Object.entries(notas)
+      .sort((a,b) => (dataBRparaDate(b[1].r.dataNF) || 0) - (dataBRparaDate(a[1].r.dataNF) || 0));
+    const ultData = f.ultima ? f.ultima.toLocaleDateString('pt-BR') : '—';
     const alertas = itens.filter(i => i.variacao > 0).length;
     const comST   = itens.filter(i => i.temST).length;
     return `<div class="fornec-card">
       <div class="fornec-name">🏭 ${nome}</div>
-      <div class="fornec-meta">Itens: <b>${itens.length}</b> &nbsp;|&nbsp; Última NF: <b>${ultData}</b></div>
+      <div class="fornec-meta">Itens: <b>${itens.length}</b> &nbsp;|&nbsp; Notas: <b>${listaNotas.length}</b> &nbsp;|&nbsp; Última: <b>${ultData}</b></div>
       ${comST   ? `<div class="fornec-meta"><span class="tag-st" style="font-size:.7rem">🔶 ${comST} item(s) com ST</span></div>` : ''}
       ${alertas ? `<div class="fornec-meta" style="color:#c62828">⚠️ ${alertas} item(s) com reajuste</div>` : ''}
+      <div class="nf-chips">
+        ${listaNotas.map(([k, v]) => `<span class="nf-chip" onclick="verNota('${nome.replace(/'/g,"\\'")}','${k}')">NF ${v.r.nNF || '—'} · ${v.r.dataNF || 's/data'} · ${v.n}</span>`).join('')}
+      </div>
       <div class="fornec-actions">
         <button class="btn btn-primary btn-sm" onclick="exportarFornecedorIdx(${idx})">📥 .xlsx</button>
-        <button class="btn btn-warn btn-sm" onclick="verFornecedorIdx(${idx})">👁️ Ver</button>
+        <button class="btn btn-warn btn-sm" onclick="verFornecedorIdx(${idx})">👁️ Ver na matriz</button>
         <button class="btn btn-danger btn-sm" onclick="limparFornecedorIdx(${idx})">🗑️ Limpar</button>
       </div>
     </div>`;
   }).join('');
 }
 
-function exportarFornecedorIdx(idx) {
-  if (!window._fornecSnapshot || !window._fornecSnapshot[idx]) return;
-  const { nome, itens } = window._fornecSnapshot[idx];
-  exportarFornecedor(nome, itens);
-}
-
 function verFornecedorIdx(idx) {
-  if (!window._fornecSnapshot || !window._fornecSnapshot[idx]) return;
-  const { nome } = window._fornecSnapshot[idx];
+  const f = (window._fornecSnapshot || [])[idx];
+  if (!f) return;
+  filtro.fornec = f.nome; filtro.nota = ''; filtro.busca = '';
   switchTab('matriz');
-  setTimeout(() => {
-    document.getElementById('matriz-alert').innerHTML =
-      `<div class="alert alert-info">Filtrando: <b>${nome}</b></div>`;
-  }, 150);
 }
-
+function verNota(nome, notaId) {
+  filtro.fornec = nome; filtro.nota = notaId; filtro.busca = '';
+  switchTab('matriz');
+}
+function exportarFornecedorIdx(idx) {
+  const f = (window._fornecSnapshot || [])[idx];
+  if (f) exportarFornecedor(f.nome, f.itens);
+}
 async function limparFornecedorIdx(idx) {
-  if (!window._fornecSnapshot || !window._fornecSnapshot[idx]) return;
-  const { nome, itens } = window._fornecSnapshot[idx];
-  if (!confirm(`Deletar TODOS os ${itens.length} item(s) do fornecedor "${nome}"?\n\nEsta ação não pode ser desfeita.`)) return;
-  // Remove todos os itens deste fornecedor da matrizData
-  matrizData = matrizData.filter(r => r.fornecedor !== nome);
-  localStorage.setItem('ls_matriz', JSON.stringify(matrizData));
-  atualizarStats();
-  renderFornecedores();
+  const f = (window._fornecSnapshot || [])[idx];
+  if (!f) return;
+  if (!confirm(`Excluir TODOS os ${f.itens.length} item(s) de "${f.nome}"?\n\nNão dá para desfazer. Baixe um backup antes se tiver dúvida.`)) return;
+  matrizData = matrizData.filter(r => r.fornecedor !== f.nome);
+  salvarLocal(); atualizarStats(); renderFornecedores();
   if (scriptURL) await salvarNoSheets();
 }
 
 // ═══════════════════════════════════════════════════════════
-// RENDER HISTÓRICO
+// HISTÓRICO / STATS
 // ═══════════════════════════════════════════════════════════
 function renderHistorico() {
   const el = document.getElementById('historico-lista');
-  if (!historicoLog.length) { el.innerHTML='<div class="empty">Nenhuma importação registrada.</div>'; return; }
+  if (!historicoLog.length) { el.innerHTML = '<div class="empty">Nenhuma importação registrada.</div>'; return; }
   el.innerHTML = [...historicoLog].reverse().map(h =>
     `<div class="hist-item">
       <span class="hist-badge">${h.data} ${h.hora}</span>
       <span><b>${h.qtdeItens}</b> itens</span>
       <span style="color:#555">${h.fornecs}</span>
       ${h.nfs ? `<span style="color:#aaa;font-size:.72rem">NF: ${h.nfs}</span>` : ''}
-    </div>`
-  ).join('');
+    </div>`).join('');
 }
-
-// ═══════════════════════════════════════════════════════════
-// STATS
-// ═══════════════════════════════════════════════════════════
 function atualizarStats() {
-  document.getElementById('st-fornec').textContent = new Set(matrizData.map(r=>r.fornecedor)).size;
+  document.getElementById('st-fornec').textContent = new Set(matrizData.map(r => r.fornecedor)).size;
   document.getElementById('st-itens').textContent  = matrizData.length;
-  document.getElementById('st-nfs').textContent    = new Set(matrizData.map(r=>r.nNF).filter(Boolean)).size;
-  document.getElementById('st-st').textContent     = matrizData.filter(r=>r.temST).length;
-  document.getElementById('st-alerta').textContent = matrizData.filter(r=>r.variacao>0).length;
-}
-
-function renderAtivo() {
-  const ativo = document.querySelector('.tab-btn.active');
-  if (!ativo) return;
-  const ids = ['importar','matriz','fornecedores','historico'];
-  const idx = [...document.querySelectorAll('.tab-btn')].indexOf(ativo);
-  if (idx >= 0) {
-    if (ids[idx]==='matriz')       renderMatriz();
-    if (ids[idx]==='fornecedores') renderFornecedores();
-    if (ids[idx]==='historico')    renderHistorico();
-  }
+  document.getElementById('st-nfs').textContent    = new Set(matrizData.map(r => r.notaId).filter(Boolean)).size;
+  document.getElementById('st-st').textContent     = matrizData.filter(r => r.temST).length;
+  document.getElementById('st-alerta').textContent = matrizData.filter(r => r.variacao > 0).length;
 }
 
 // ═══════════════════════════════════════════════════════════
 // EXPORTAR XLSX
 // ═══════════════════════════════════════════════════════════
+const CAB_COMPLETO = ['Fornecedor','Produto','UN da NF','Qtde da NF','Preço NF (R$)','IPI (%)','ST?','ICMS-ST Unit.(R$)',
+  'Custo Embal. (R$)','Pct/Embal.','Un/Pacote','Total Unidades','Custo/Pacote (R$)','Custo/Unid. (R$)',
+  '% Reajuste','Novo Preço Est. (R$)','Variação (R$)','Data NF','Nº NF','Status','% Markup',
+  'Venda/Embal. (R$)','Venda/Pacote (R$)','Venda/Unid. (R$)'];
+
+function linhaExport(r) {
+  const pct = Math.max(1, r.pctEmbal || 1), unp = Math.max(1, r.unPct || 1);
+  const porEmb = pct * unp;
+  const base = r.novoPreco > 0 ? r.novoPreco : r.custoUnit;
+  const mk = 1 + (r.markup || 0) / 100;
+  return [r.fornecedor, r.produto, r.un, r.qtde, r.precoNF, r.ipi,
+    r.temST ? 'ST' : 'Normal', r.stPorUnidade || 0, r.custoUnit,
+    pct, unp, r.qtde * porEmb, base / pct, base / porEmb,
+    r.reajuste, r.novoPreco, r.variacao, r.dataNF, r.nNF, r.status,
+    r.markup || 0, base * mk, (base / pct) * mk, (base / porEmb) * mk];
+}
+
 function exportarMatriz() {
-  if (!matrizData.length) { alert('Nenhum dado.'); return; }
+  if (!matrizData.length) { alert('Nenhum dado para exportar.'); return; }
+  const linhas = linhasFiltradas().map(x => x.r);
   const wb = XLSX.utils.book_new();
-  const hdrs = ['Fornecedor','Produto','UN','Qtde NF','Preço NF (R$)','IPI (%)','ST?','ICMS-ST Unit.(R$)','Custo Unit. Real (R$)','Un/Embal.','Total Unidades','Custo/Unid. (R$)','% Reajuste','Novo Preço Est. (R$)','Variação (R$)','Data NF','Nº NF','Status','% Markup','Venda/Embal. (R$)','Venda/Unid. (R$)'];
-  const rows = matrizData.map(r => {
-    const base      = r.novoPreco>0 ? r.novoPreco : r.custoUnit;
-    const unEmbal   = r.unEmbal || 1;
-    const totalUnid = r.qtde * unEmbal;
-    const custoUnid = base / unEmbal;
-    const pVendaEmb = base * (1+(r.markup||0)/100);
-    const pVendaUnd = custoUnid * (1+(r.markup||0)/100);
-    return [r.fornecedor,r.produto,r.un,r.qtde,r.precoNF,r.ipi,
-      r.temST?'🔶 ST':'✅ Normal', r.stPorUnidade||0, r.custoUnit,
-      unEmbal, totalUnid, custoUnid,
-      r.reajuste, r.novoPreco, r.variacao,
-      r.dataNF, r.nNF, r.status,
-      r.markup||0, pVendaEmb, pVendaUnd];
+  const ws = XLSX.utils.aoa_to_sheet([CAB_COMPLETO, ...linhas.map(linhaExport)]);
+  ws['!cols'] = [22,34,8,10,12,8,8,13,14,10,10,12,14,13,10,14,12,11,10,10,10,13,13,13].map(w => ({ wch:w }));
+  ws['!freeze'] = { xSplit:2, ySplit:1 };
+  XLSX.utils.book_append_sheet(wb, ws, filtro.nota ? 'Nota filtrada' : 'Matriz');
+
+  // uma aba por fornecedor (sempre a partir do que está visível)
+  const porFornec = {};
+  linhas.forEach(r => { (porFornec[r.fornecedor] = porFornec[r.fornecedor] || []).push(r); });
+  Object.entries(porFornec).forEach(([nome, itens]) => {
+    const slug = nome.substring(0,25).replace(/[\\/?*\[\]:]/g, '_');
+    const wsF = XLSX.utils.aoa_to_sheet([CAB_COMPLETO, ...itens.map(linhaExport)]);
+    wsF['!cols'] = ws['!cols'];
+    try { XLSX.utils.book_append_sheet(wb, wsF, slug); } catch (_) {}
   });
-  const ws = XLSX.utils.aoa_to_sheet([hdrs,...rows]);
-  ws['!cols'] = [20,25,5,8,12,6,8,12,14,10,14,12,11,9,8,9,14].map(w=>({wch:w}));
-  XLSX.utils.book_append_sheet(wb,ws,'Matriz Geral');
-  // abas por fornecedor
-  const fornecs={};
-  matrizData.forEach(r=>{if(!fornecs[r.fornecedor])fornecs[r.fornecedor]=[];fornecs[r.fornecedor].push(r);});
-  Object.entries(fornecs).forEach(([nome,itens])=>{
-    const slug=nome.substring(0,25).replace(/[\\/?*\[\]:]/g,'_');
-    const wsF=XLSX.utils.aoa_to_sheet([
-      ['Produto','UN','Qtde','Preço NF','IPI%','ST?','ST Unit.','Custo Unit.','% Reajuste','Novo Preço','Variação','Data NF','NF','Status','% Markup','Preço Venda'],
-      ...itens.map(r=>{const b=r.novoPreco>0?r.novoPreco:r.custoUnit;return[r.produto,r.un,r.qtde,r.precoNF,r.ipi,r.temST?'ST':'Normal',r.stPorUnidade||0,r.custoUnit,r.reajuste,r.novoPreco,r.variacao,r.dataNF,r.nNF,r.status,r.markup||0,b*(1+(r.markup||0)/100)];})
-    ]);
-    XLSX.utils.book_append_sheet(wb,wsF,slug);
-  });
-  const wsH=XLSX.utils.aoa_to_sheet([['Data','Hora','Itens','Fornecedores','NFs'],...historicoLog.map(h=>[h.data,h.hora,h.qtdeItens,h.fornecs,h.nfs])]);
-  XLSX.utils.book_append_sheet(wb,wsH,'Histórico');
-  XLSX.writeFile(wb,`Loja_Sabrina_Matriz_${new Date().toISOString().split('T')[0]}.xlsx`);
+
+  const wsH = XLSX.utils.aoa_to_sheet([['Data','Hora','Itens','Fornecedores','NFs'],
+    ...historicoLog.map(h => [h.data, h.hora, h.qtdeItens, h.fornecs, h.nfs])]);
+  XLSX.utils.book_append_sheet(wb, wsH, 'Histórico');
+  XLSX.writeFile(wb, 'Loja_Sabrina_Matriz_' + new Date().toISOString().split('T')[0] + '.xlsx');
 }
 
 function exportarFornecedor(nome, itens) {
   if (!itens) itens = matrizData.filter(r => r.fornecedor === nome);
   if (!itens.length) return;
-  const wb   = XLSX.utils.book_new();
-  const slug = nome.substring(0,25).replace(/[\\/?*\[\]:]/g,'_');
+  const wb = XLSX.utils.book_new();
+  const slug = nome.substring(0,25).replace(/[\\/?*\[\]:]/g, '_');
 
-  // Aba Resumo — último preço por produto
-  const produtos = {}; itens.forEach(r => { produtos[r.produto] = r; });
-  const resumo   = Object.values(produtos);
-  const wsR = XLSX.utils.aoa_to_sheet([
-    [`FORNECEDOR: ${nome}`], [],
-    ['Produto','UN','Qtde NF','Un/Embal.','Total Unid.','Custo Unit.(R$)','Custo/Unid.(R$)','% Reajuste','Novo Preço','Variação','ST?','Data NF','Status','% Markup','Venda/Embal.(R$)','Venda/Unid.(R$)'],
-    ...resumo.map(r => {
-      const b        = r.novoPreco>0 ? r.novoPreco : r.custoUnit;
-      const unEmbal  = r.unEmbal || 1;
-      const totUnid  = r.qtde * unEmbal;
-      const cUnid    = b / unEmbal;
-      const pVEmb    = b * (1+(r.markup||0)/100);
-      const pVUnd    = cUnid * (1+(r.markup||0)/100);
-      return [r.produto, r.un, r.qtde, unEmbal, totUnid, r.custoUnit, cUnid,
-              r.reajuste, r.novoPreco, r.variacao,
-              r.temST?'🔶 ST':'Normal', r.dataNF, r.status,
-              r.markup||0, pVEmb, pVUnd];
-    })
-  ]);
-  wsR['!cols'] = [28,5,8,9,10,14,13,10,12,12,8,11,8,9,14,13].map(w=>({wch:w}));
+  // Resumo: último preço de cada produto
+  const ultimos = {};
+  itens.forEach(r => { ultimos[normalizarNome(r.produto)] = r; });
+  const wsR = XLSX.utils.aoa_to_sheet([[`FORNECEDOR: ${nome}`], [], CAB_COMPLETO,
+    ...Object.values(ultimos).map(linhaExport)]);
+  wsR['!cols'] = [22,34,8,10,12,8,8,13,14,10,10,12,14,13,10,14,12,11,10,10,10,13,13,13].map(w => ({ wch:w }));
   XLSX.utils.book_append_sheet(wb, wsR, 'Resumo');
 
-  // Aba Histórico Completo
-  const wsH = XLSX.utils.aoa_to_sheet([
-    ['Produto','UN','Qtde NF','Preço NF','IPI','ST?','ST Unit.','Custo Unit.','Un/Embal.','Total Unid.','Custo/Unid.','Data NF','NF'],
-    ...itens.map(r => {
-      const unEmbal = r.unEmbal || 1;
-      return [r.produto, r.un, r.qtde, r.precoNF, r.ipi,
-              r.temST?'ST':'Normal', r.stPorUnidade||0, r.custoUnit,
-              unEmbal, r.qtde*unEmbal, r.custoUnit/unEmbal,
-              r.dataNF, r.nNF];
-    })
-  ]);
-  wsH['!cols'] = [28,5,8,12,6,8,12,14,9,10,13,11,9].map(w=>({wch:w}));
-  XLSX.utils.book_append_sheet(wb, wsH, 'Histórico Completo');
+  // Uma aba por nota
+  const notas = {};
+  itens.forEach(r => { (notas[String(r.notaId)] = notas[String(r.notaId)] || []).push(r); });
+  Object.values(notas).forEach(lista => {
+    const r0 = lista[0];
+    const aba = ('NF ' + (r0.nNF || 's-nf')).substring(0,28).replace(/[\\/?*\[\]:]/g, '_');
+    const wsN = XLSX.utils.aoa_to_sheet([
+      [`NF ${r0.nNF || '—'} — ${r0.dataNF || ''} — ${nome}`], [], CAB_COMPLETO, ...lista.map(linhaExport)]);
+    wsN['!cols'] = wsR['!cols'];
+    try { XLSX.utils.book_append_sheet(wb, wsN, aba); } catch (_) {}
+  });
 
-  XLSX.writeFile(wb, `Loja_Sabrina_${slug}_${new Date().toISOString().split('T')[0]}.xlsx`);
+  XLSX.writeFile(wb, 'Loja_Sabrina_' + slug + '_' + new Date().toISOString().split('T')[0] + '.xlsx');
 }
 
 function exportarHistorico() {
-  if(!historicoLog.length){alert('Nenhum histórico.');return;}
-  const wb=XLSX.utils.book_new();
-  const ws=XLSX.utils.aoa_to_sheet([['Data','Hora','Itens','Fornecedores','NFs'],...historicoLog.map(h=>[h.data,h.hora,h.qtdeItens,h.fornecs,h.nfs])]);
-  XLSX.utils.book_append_sheet(wb,ws,'Histórico');
-  XLSX.writeFile(wb,`Loja_Sabrina_Historico_${new Date().toISOString().split('T')[0]}.xlsx`);
+  if (!historicoLog.length) { alert('Nenhum histórico.'); return; }
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet([['Data','Hora','Itens','Fornecedores','NFs'],
+    ...historicoLog.map(h => [h.data, h.hora, h.qtdeItens, h.fornecs, h.nfs])]);
+  XLSX.utils.book_append_sheet(wb, ws, 'Histórico');
+  XLSX.writeFile(wb, 'Loja_Sabrina_Historico_' + new Date().toISOString().split('T')[0] + '.xlsx');
 }
+
+// ═══════════════════════════════════════════════════════════
+// PARTIDA
+// ═══════════════════════════════════════════════════════════
+atualizarStats();
+atualizarSyncBadge();
+renderPendentes();
+if (scriptURL) carregarDoSheets();
 </script>
 </body>
 </html>
